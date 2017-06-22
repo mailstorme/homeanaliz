@@ -1,0 +1,21 @@
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\bin\Release\Подсчет начислений.exe.config
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\bin\Release\Подсчет начислений.exe
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\bin\Release\Подсчет начислений.pdb
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\Подсчет начислений.csproj.ResolveComReference.cache
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\MainWindow.g.cs
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\App.g.cs
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\Подсчет начислений_MarkupCompile.cache
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\Подсчет начислений_MarkupCompile.lref
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\MainWindow.baml
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\Подсчет начислений.g.resources
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\Подсчет_начислений.Properties.Resources.resources
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\Подсчет начислений.csproj.GenerateResource.Cache
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\Подсчет начислений.exe
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\Подсчет начислений.pdb
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\obj\Release\Подсчет начислений.csprojResolveAssemblyReference.cache
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\bin\Release\PdfSharp.Charting.dll
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\bin\Release\PdfSharp.dll
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\bin\Release\PdfSharp.xml
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\bin\Release\PdfSharp.Charting.xml
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\bin\Release\de\PdfSharp.resources.dll
+C:\Users\Andrei\Desktop\Коэффициенты\Подсчет начислений\bin\Release\de\PdfSharp.Charting.resources.dll
