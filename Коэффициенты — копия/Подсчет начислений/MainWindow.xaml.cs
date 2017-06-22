@@ -560,64 +560,9 @@ namespace Подсчет_начислений
             //win.MessageBox.Show("Конец 2.2-го этапа");
 
             basaseach(ref dilers, BasePath, DatePeriod, 2, "a");
-            /*
-            basearr = getarray(BasePath, 2, new int[] { 2, 5, 10, 18, 15 });
-            Nbase = basearr[0].Length;
-
-            win.MessageBox.Show(basearr[1][0].ToString());
-
-            for (int i = 0; i < Nbase; i++)
-            {
-                if (basearr[4][i].ToString() != "МТС")
-                    continue;
-                foreach (string date in DatePeriod)
-                {
-                    if (basearr[1][i].ToString().Contains(date))
-                    {
-                        string TT = (basearr[3][i].ToString() == "" || basearr[3][i] == null) ? "" : basearr[3][i].ToString() + " - ";
-                        string DD = (basearr[2][i] == null) ? " " : basearr[2][i].ToString();
-
-                        foreach (diler d in dilers)
-                        {
-                            if (d.name.ToString().Contains(TT + DD))
-                                d.a++;
-                        }
-                        break;
-                    }
-                }
-            }
-            */
-            //win.MessageBox.Show("Конец 2.3-го этапа");
-
-
+           
             basaseach(ref dilers, BasePath, DatePeriod, 3, "a");
-            /*
-            basearr = getarray(BasePath, 3, new int[] { 2, 5, 10, 18, 15 });
-            Nbase = basearr[0].Length;
-
-            win.MessageBox.Show(basearr[1][0].ToString());
-
-            for (int i = 0; i < Nbase; i++)
-            {
-                if (basearr[4][i].ToString() != "МТС")
-                    continue;
-                foreach (string date in DatePeriod)
-                {
-                    if (basearr[1][i].ToString().Contains(date))
-                    {
-                        string TT = (basearr[3][i].ToString() == "" || basearr[3][i] == null) ? "" : basearr[3][i].ToString() + " - ";
-                        string DD = (basearr[2][i] == null) ? " " : basearr[2][i].ToString();
-
-                        foreach (diler d in dilers)
-                        {
-                            if (d.name.ToString().Contains(TT + DD))
-                                d.a++;
-                        }
-                        break;
-                    }
-                }
-            }
-            */
+            
             win.MessageBox.Show("Конец 2.4-го этапа");
 
 
@@ -808,8 +753,12 @@ namespace Подсчет_начислений
 
             for (int i = 0; i < Nbase; i++)
             {
-                if ((basearr[4][i].ToString() != "МТС" && basearr[4][i].ToString() != "МТС") || basearr[1][i] == null)
-                    continue;
+                if (Combobox.Text == "MTC")
+                    if ((basearr[4][i].ToString() != "МТС" && basearr[4][i].ToString() != "МТС") || basearr[1][i] == null)
+                        continue;
+                else if (Combobox.Text == "Megafon")
+                    if ((basearr[4][i].ToString() != "МТС" && basearr[4][i].ToString() != "МТС") || basearr[1][i] == null)
+                        continue;
                 foreach (string date in DatePeriod)
                 {
                     if (basearr[1][i].ToString().Contains(date))
