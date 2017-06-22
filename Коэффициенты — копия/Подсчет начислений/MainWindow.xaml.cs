@@ -534,30 +534,28 @@ namespace Подсчет_начислений
                     if (dilerName == d.name.ToString())
                     {
                         result[k, 0] = d.name;
-                        result[k, 1] = d.b;
-                        result[k, 2] = d.a;
-                        result[k, 3] = d.b + d.a;
-                        result[k, 4] = d.allincom;
-                        result[k, 5] = d.sum;
-                        result[k, 6] = d.count1201;
-                        result[k, 7] = d.count1202;
-                        result[k, 8] = d.count1203;
-                        result[k, 9] = d.count12046;
-                        result[k, 10] = d.count120712;
-                        result[k, 11] = d.count1201 / Convert.ToDouble(d.allincom);
-                        result[k, 12] = d.count1202 / Convert.ToDouble(d.allincom);
-                        result[k, 13] = d.count1203 / Convert.ToDouble(d.allincom);
-                        result[k, 14] = d.count12046 / Convert.ToDouble(d.allincom);
-                        result[k, 15] = d.count120712 / Convert.ToDouble(d.allincom);
-                        result[k, 16] = d.sum / Convert.ToDouble(d.allincom);
-                        result[k, 17] = d.sum / Convert.ToDouble(d.a + d.b);
-                        result[k, 18] = Convert.ToDouble(d.count1201) / Convert.ToDouble(d.a + d.b);
-                        result[k, 19] = (d.count1201 + d.count1202 + d.count1203) / Convert.ToDouble(d.a + d.b);
-                        result[k, 20] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
+                        result[k, 1] = d.b + d.a;
+                        result[k, 2] = d.allincom;
+                        result[k, 3] = d.sum;
+                        result[k, 4] = d.count1201;
+                        result[k, 5] = d.count1202;
+                        result[k, 6] = d.count1203;
+                        result[k, 7] = d.count12046;
+                        result[k, 8] = d.count120712;
+                        result[k, 9] = d.count1201 / Convert.ToDouble(d.allincom);
+                        result[k, 10] = d.count1202 / Convert.ToDouble(d.allincom);
+                        result[k, 11] = d.count1203 / Convert.ToDouble(d.allincom);
+                        result[k, 12] = d.count12046 / Convert.ToDouble(d.allincom);
+                        result[k, 13] = d.count120712 / Convert.ToDouble(d.allincom);
+                        result[k, 14] = d.sum / Convert.ToDouble(d.allincom);
+                        result[k, 15] = d.sum / Convert.ToDouble(d.a + d.b);
+                        result[k, 16] = Convert.ToDouble(d.count1201) / Convert.ToDouble(d.a + d.b);
+                        result[k, 17] = (d.count1201 + d.count1202 + d.count1203) / Convert.ToDouble(d.a + d.b);
+                        result[k, 18] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
                         //result[k, 20] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll)) * 100).ToString();
                         //result[k, 21] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll)) *100).ToString().Substring(0, 4) + "% (" + d.TregAll.ToString() + ")";
                         string tarifreg = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("P") + "  (" + d.TregAll.ToString() + ")";
-                        result[k, 21] = tarifreg;
+                        result[k, 19] = tarifreg;
                         k++;
                         break;
                     }
@@ -597,7 +595,7 @@ namespace Подсчет_начислений
 
             range = null;
             range = excelworksheet.get_Range(R1C1[1] + "1:" + R1C1[col] + "1");
-            range.Value2 = new object[,] { {"Дилер Дистр", "Кол-во в Базе" , "Кол-во в Архиве" , "Всего отгрузок" ,"Кол-во симок в комиссии", "Всего платежей" ,
+            range.Value2 = new object[,] { {"Дилер Дистр", "Всего отгрузок за выбранный период" ,"Кол-во симок в комиссии", "Всего платежей" ,
                     "кол-во симок >120р в первом месяце" ,"кол-во симок >120р во втором месяце","кол-во симок >120р в третьем месяце",
              "кол-во симок >120р в 4-6 месяце"  ,"кол-во симок >120р в 7-12 месяце", "1) 1M" ,"2) 2M" ,"3) 3M" ,"4) 4-6M","5) 7-12M","6) платежи на комис" ,"7) платежи на отгрузки" ,
                     "8) хорошие (>120р) симки 1-го пер набл на кол-во отгрузок" ,"9) хорошие (>120р) симки 1,2,3 пер набл на кол-во отгрузок" } };
