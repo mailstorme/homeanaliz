@@ -23,6 +23,7 @@ using System.Web;
 using PdfSharp.Pdf.Printing;
 using System.Diagnostics;
 
+
 //using System.mscorlib;
 
 namespace Подсчет_начислений
@@ -515,7 +516,7 @@ namespace Подсчет_начислений
                 return;
             object[][] tochki = getarray(toch,1, new int[] {3,1});
 
-            int columnsinresult = 22;
+            int columnsinresult = 20;
             object[,] result = new object[dilers.Count, columnsinresult];
 
             int k = 0;
@@ -541,19 +542,17 @@ namespace Подсчет_начислений
                         result[k, 6] = d.count1203;
                         result[k, 7] = d.count12046;
                         result[k, 8] = d.count120712;
-                        result[k, 9] = d.count1201 / Convert.ToDouble(d.allincom);
-                        result[k, 10] = d.count1202 / Convert.ToDouble(d.allincom);
-                        result[k, 11] = d.count1203 / Convert.ToDouble(d.allincom);
-                        result[k, 12] = d.count12046 / Convert.ToDouble(d.allincom);
-                        result[k, 13] = d.count120712 / Convert.ToDouble(d.allincom);
-                        result[k, 14] = d.sum / Convert.ToDouble(d.allincom);
-                        result[k, 15] = d.sum / Convert.ToDouble(d.a + d.b);
-                        result[k, 16] = Convert.ToDouble(d.count1201) / Convert.ToDouble(d.a + d.b);
-                        result[k, 17] = (d.count1201 + d.count1202 + d.count1203) / Convert.ToDouble(d.a + d.b);
+                        result[k, 9] = Math.Round((d.count1201 / Convert.ToDouble(d.allincom)),4);
+                        result[k, 10] = Math.Round((d.count1202 / Convert.ToDouble(d.allincom)),4);
+                        result[k, 11] = Math.Round((d.count1203 / Convert.ToDouble(d.allincom)),4);
+                        result[k, 12] = Math.Round((d.count12046 / Convert.ToDouble(d.allincom)),4);
+                        result[k, 13] = Math.Round((d.count120712 / Convert.ToDouble(d.allincom)),4);
+                        result[k, 14] = Math.Round((d.sum / Convert.ToDouble(d.allincom)),2);
+                        result[k, 15] = Math.Round((d.sum / Convert.ToDouble(d.a + d.b)),2);
+                        result[k, 16] = Math.Round((Convert.ToDouble(d.count1201) / Convert.ToDouble(d.a + d.b)),4);
+                        result[k, 17] = Math.Round(((d.count1201 + d.count1202 + d.count1203) / Convert.ToDouble(d.a + d.b)),4);
                         result[k, 18] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
                         result[k, 19] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("p") + "  (" + d.TregAll.ToString() + ")";
-                        result[k, 20] = d.b;
-                        result[k, 21] = d.a;
                         k++;
                         break;
                     }
@@ -594,7 +593,7 @@ namespace Подсчет_начислений
             range.Value2 = new object[,] { {"Дилер Дистр", "Всего отгрузок за выбранный период" ,"Кол-во симок в комиссии", "Всего платежей" ,
                     "кол-во симок >120р в первом месяце" ,"кол-во симок >120р во втором месяце","кол-во симок >120р в третьем месяце",
              "кол-во симок >120р в 4-6 месяце"  ,"кол-во симок >120р в 7-12 месяце", "1) 1M" ,"2) 2M" ,"3) 3M" ,"4) 4-6M","5) 7-12M","6) платежи на комис" ,"7) платежи на отгрузки" ,
-                    "8) хорошие (>120р) симки 1-го пер набл на кол-во отгрузок" ,"9) хорошие (>120р) симки 1,2,3 пер набл на кол-во отгрузок" } };
+                    "8) хорошие (>120р) симки 1-го пер набл на кол-во отгрузок" ,"9) хорошие (>120р) симки 1,2,3 пер набл на кол-во отгрузок","C АП", "Без АП" } };
 
             range = null;
             range = excelworksheet.get_Range(R1C1[1] + "2:" + R1C1[col] + rows.ToString());
