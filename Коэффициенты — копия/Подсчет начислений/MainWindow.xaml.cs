@@ -515,7 +515,7 @@ namespace Подсчет_начислений
                 return;
             object[][] tochki = getarray(toch,1, new int[] {3,1});
 
-            int columnsinresult = 20;
+            int columnsinresult = 22;
             object[,] result = new object[dilers.Count, columnsinresult];
 
             int k = 0;
@@ -552,6 +552,8 @@ namespace Подсчет_начислений
                         result[k, 17] = (d.count1201 + d.count1202 + d.count1203) / Convert.ToDouble(d.a + d.b);
                         result[k, 18] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
                         result[k, 19] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("p") + "  (" + d.TregAll.ToString() + ")";
+                        result[k, 20] = d.b;
+                        result[k, 21] = d.a;
                         k++;
                         break;
                     }
@@ -696,16 +698,21 @@ namespace Подсчет_начислений
             object[][] basearr = getarray(BasePath, list, new int[] { 2, 11, 10, 18, 15 });
             int Nbase = basearr[0].Length;
 
-            //win.MessageBox.Show(basearr[0][0].ToString());
+            //win.MessageBox.Show(basearr[4][137].ToString());
 
             for (int i = 0; i < Nbase; i++)
             {
                 if (Combobox.Text == "MTC")
                     if ((basearr[4][i].ToString() != "МТС" && basearr[4][i].ToString() != "МТС") || basearr[1][i] == null)
                         continue;
-                else if (Combobox.Text == "Megafon")
-                    if ((basearr[4][i].ToString() != "Мфон Дилерский" && basearr[4][i].ToString() != "Мфон Дил ЗФ") || basearr[1][i] == null)
-                        continue;
+                    else if (Combobox.Text == "Megafon")
+                        if (!basearr[4][i].ToString().Contains("Мфон Дилерский"))
+                            continue;
+                        else if (!basearr[4][i].ToString().Contains("Мфон Дил ЗФ"))
+                        {
+                            win.MessageBox.Show("ПОПАЛ СЮДА");
+                            continue;
+                        }
                 if (basearr[2][i] == null && basearr[3][i] == null)
                 {
                     continue;
