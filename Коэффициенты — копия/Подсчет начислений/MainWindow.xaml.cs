@@ -282,7 +282,7 @@ namespace Подсчет_начислений
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-
+            win.MessageBox.Show(Combobox.Text);
             int period =  Convert.ToInt32(Period.Text);
             string[] DatePeriod = new string[period];
             for (int i = 0; i < period; i++)
@@ -702,17 +702,18 @@ namespace Подсчет_начислений
 
             for (int i = 0; i < Nbase; i++)
             {
+                if (basearr[1][i] == null)
+                    continue;
                 if (Combobox.Text == "MTC")
-                    if ((basearr[4][i].ToString() != "МТС" && basearr[4][i].ToString() != "МТС") || basearr[1][i] == null)
+                {
+                    if ((basearr[4][i].ToString() != "МТС" && basearr[4][i].ToString() != "МТС"))
                         continue;
-                    else if (Combobox.Text == "Megafon")
-                        if (!basearr[4][i].ToString().Contains("Мфон Дилерский"))
-                            continue;
-                        else if (!basearr[4][i].ToString().Contains("Мфон Дил ЗФ"))
-                        {
-                            win.MessageBox.Show("ПОПАЛ СЮДА");
-                            continue;
-                        }
+                }
+                if (Combobox.Text == "Megafon")
+                {
+                    if (!basearr[4][i].ToString().Contains("Мфон Дилерский") && !basearr[4][i].ToString().Contains("Мфон Дил ЗФ"))
+                        continue;
+                }
                 if (basearr[2][i] == null && basearr[3][i] == null)
                 {
                     continue;
