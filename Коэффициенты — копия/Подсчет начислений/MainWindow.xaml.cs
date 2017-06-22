@@ -34,10 +34,13 @@ namespace Подсчет_начислений
     {
         string[] R1C1 = new string[] { "0", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ", "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM", "BN", "BO", "BP", "BQ", "BR", "BS", "BT", "BU", "BV", "BW", "BX", "BY", "BZ", "CA", "CB", "CC", "CD", "CE", "CF", "CG", "CH", "CI", "CJ", "CK", "CL", "CM", "CN", "CO", "CP", "CQ", "CR", "CS", "CT", "CU", "CV", "CW", "CX", "CY", "CZ", "DA", "DB", "DC", "DD", "DE", "DF", "DG", "DH", "DI", "DJ", "DK", "DL", "DM", "DN", "DO", "DP", "DQ", "DR", "DS", "DT", "DU", "DV", "DW", "DX", "DY", "DZ", "EA", "EB", "EC", "ED", "EE", "EF", "EG", "EH", "EI", "EJ", "EK", "EL", "EM", "EN", "EO", "EP", "EQ", "ER", "ES", "ET", "EU", "EV", "EW", "EX", "EY", "EZ" };
         string[] Date = new string[] {".04.2017", ".03.2017", ".02.2017", ".01.2017", ".12.2016", ".11.2016", ".10.2016", ".09.2016", ".08.2016", ".07.2016", ".06.2016", ".05.2016", ".04.2016", ".03.2016", ".02.2016", ".01.2016", };
+        int esd;
+        
 
         public MainWindow()
         {
             InitializeComponent();
+            esd = 0;
         }
 
 
@@ -282,7 +285,6 @@ namespace Подсчет_начислений
         {
 
             int period =  Convert.ToInt32(Period.Text);
-            win.MessageBox.Show(period.ToString());
             string[] DatePeriod = new string[period];
             for (int i = 0; i < period; i++)
             {
@@ -369,6 +371,9 @@ namespace Подсчет_начислений
             
             for (int i = 2; i <= Rows; i++)
             {
+                if (Convert.ToInt32(ComisAr[i, 2]) > period)
+                    continue;
+
                 if (ComisAr[i, 1] == null || ComisAr[i, 1].ToString() == "" || ComisAr[i, 1].ToString() == " " || ComisAr[i, 1].ToString() == null)
                     continue;
                 
@@ -489,81 +494,21 @@ namespace Подсчет_начислений
                 return;
 
             basaseach(ref dilers, BasePath, DatePeriod,1,"b");
-            /*
-            object[][] basearr = getarray(BasePath, 1, new int[] { 2, 5, 10, 18, 15});
-            int Nbase = basearr[0].Length;
-
-            win.MessageBox.Show(basearr[0][0].ToString());
-
-            for (int i = 0; i < Nbase; i++)
-            {
-                if (basearr[4][i].ToString() != "МТС" || basearr[1][i] == null)
-                    continue;
-                foreach (string date in DatePeriod)
-                {
-                    if (basearr[1][i].ToString().Contains(date))
-                    {
-                        string TT = "";
-                        if (basearr[3][i] != null)
-                        TT = (basearr[3][i].ToString() == "") ? "" : basearr[3][i].ToString() + " - ";
-                        string DD = (basearr[2][i] == null) ? " " : basearr[2][i].ToString();
-
-                        foreach (diler d in dilers)
-                        {
-                            if (d.name.ToString().Contains(TT + DD))
-                                d.b++;
-                        }
-                        break;
-                    }
-                }
-            }
-            */
 
             win.MessageBox.Show("Конец 2.1-го этапа");
-
-            
-
+                     
 
             BasePath = new OpenExcelFile().Filenamereturn();
             if (BasePath == "can not open file")
                 return;
 
             basaseach(ref dilers, BasePath, DatePeriod, 1,"a");
-            /*
-            basearr = getarray(BasePath, 1, new int[] { 2, 5, 10, 18, 15 });
-            Nbase = basearr[0].Length;
-
-            win.MessageBox.Show(basearr[1][0].ToString());
-
-            for (int i = 0; i < Nbase; i++)
-            {
-                if (basearr[4][i].ToString() != "МТС")
-                    continue;
-                foreach (string date in DatePeriod)
-                {
-                    if (basearr[1][i].ToString().Contains(date))
-                    {
-                        string TT = (basearr[3][i].ToString() == "" || basearr[3][i] == null) ? "" : basearr[3][i].ToString() + " - ";
-                        string DD = (basearr[2][i] == null) ? " " : basearr[2][i].ToString();
-
-                        foreach (diler d in dilers)
-                        {
-                            if (d.name.ToString().Contains(TT + DD))
-                                d.a++;
-                        }
-                        break;
-                    }
-                }
-            }
-            */
-
-            //win.MessageBox.Show("Конец 2.2-го этапа");
-
+            
             basaseach(ref dilers, BasePath, DatePeriod, 2, "a");
            
             basaseach(ref dilers, BasePath, DatePeriod, 3, "a");
             
-            win.MessageBox.Show("Конец 2.4-го этапа");
+            win.MessageBox.Show("Конец 2.4-го этапа,  количество null null = " + esd.ToString());
 
 
             string toch = new OpenExcelFile().Filenamereturn();
@@ -608,8 +553,11 @@ namespace Подсчет_начислений
                         result[k, 17] = d.sum / Convert.ToDouble(d.a + d.b);
                         result[k, 18] = Convert.ToDouble(d.count1201) / Convert.ToDouble(d.a + d.b);
                         result[k, 19] = (d.count1201 + d.count1202 + d.count1203) / Convert.ToDouble(d.a + d.b);
-                        result[k, 20] = (d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll);
-                        result[k, 21] = (d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll);
+                        result[k, 20] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
+                        //result[k, 20] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll)) * 100).ToString();
+                        //result[k, 21] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll)) *100).ToString().Substring(0, 4) + "% (" + d.TregAll.ToString() + ")";
+                        string tarifreg = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("P") + "  (" + d.TregAll.ToString() + ")";
+                        result[k, 21] = tarifreg;
                         k++;
                         break;
                     }
@@ -746,10 +694,10 @@ namespace Подсчет_начислений
 
         public void basaseach(ref List<diler> dilers,string BasePath,string[] DatePeriod, int list,string a)
         {
-            object[][] basearr = getarray(BasePath, list, new int[] { 2, 5, 10, 18, 15 });
+            object[][] basearr = getarray(BasePath, list, new int[] { 2, 11, 10, 18, 15 });
             int Nbase = basearr[0].Length;
 
-            win.MessageBox.Show(basearr[0][0].ToString());
+            //win.MessageBox.Show(basearr[0][0].ToString());
 
             for (int i = 0; i < Nbase; i++)
             {
@@ -759,6 +707,12 @@ namespace Подсчет_начислений
                 else if (Combobox.Text == "Megafon")
                     if ((basearr[4][i].ToString() != "МТС" && basearr[4][i].ToString() != "МТС") || basearr[1][i] == null)
                         continue;
+                if (basearr[2][i] == null && basearr[3][i] == null)
+                {
+                    esd++;
+                    continue;
+                }
+
                 foreach (string date in DatePeriod)
                 {
                     if (basearr[1][i].ToString().Contains(date))
