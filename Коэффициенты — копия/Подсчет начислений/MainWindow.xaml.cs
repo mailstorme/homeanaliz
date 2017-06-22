@@ -335,7 +335,7 @@ namespace Подсчет_начислений
             Rows = excelworksheet.UsedRange.Rows.Count;
             Columns = excelworksheet.UsedRange.Columns.Count;
 
-            object[,] ComisAr = new object[Rows,Columns + 12];
+            object[,] ComisAr = new object[Rows,Columns +1];
 
             range = excelworksheet.get_Range(R1C1[1] + "1:" + R1C1[Columns] + Rows.ToString());
             ComisAr = (System.Object[,])range.get_Value(Type.Missing);
@@ -373,7 +373,7 @@ namespace Подсчет_начислений
             {
                 if (Convert.ToInt32(ComisAr[i, 2]) > period)
                     continue;
-
+                
                 if (ComisAr[i, 1] == null || ComisAr[i, 1].ToString() == "" || ComisAr[i, 1].ToString() == " " || ComisAr[i, 1].ToString() == null)
                     continue;
                 
@@ -485,7 +485,7 @@ namespace Подсчет_начислений
                 }
             }
 
-            win.MessageBox.Show("1-ый этап завершен");
+            win.MessageBox.Show("1-ый этап завершен. Укажите файл Базы");
 
 
 
@@ -495,7 +495,7 @@ namespace Подсчет_начислений
 
             basaseach(ref dilers, BasePath, DatePeriod,1,"b");
 
-            win.MessageBox.Show("Конец 2.1-го этапа");
+            win.MessageBox.Show("Конец 2.1-го этапа. Укажите файл Архивной базы");
                      
 
             BasePath = new OpenExcelFile().Filenamereturn();
@@ -508,7 +508,7 @@ namespace Подсчет_начислений
            
             basaseach(ref dilers, BasePath, DatePeriod, 3, "a");
             
-            win.MessageBox.Show("Конец 2.4-го этапа,  количество null null = " + esd.ToString());
+            win.MessageBox.Show("Конец 2.4-го этапа. Укажите файл с точками для анализа");
 
 
             string toch = new OpenExcelFile().Filenamereturn();
@@ -516,8 +516,8 @@ namespace Подсчет_начислений
                 return;
             object[][] tochki = getarray(toch,1, new int[] {3,1});
 
-
-            object[,] result = new object[dilers.Count, 22];
+            int columnsinresult = 20;
+            object[,] result = new object[dilers.Count, columnsinresult];
 
             int k = 0;
             int N = tochki[0].Length;
@@ -552,10 +552,7 @@ namespace Подсчет_начислений
                         result[k, 16] = Convert.ToDouble(d.count1201) / Convert.ToDouble(d.a + d.b);
                         result[k, 17] = (d.count1201 + d.count1202 + d.count1203) / Convert.ToDouble(d.a + d.b);
                         result[k, 18] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
-                        //result[k, 20] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll)) * 100).ToString();
-                        //result[k, 21] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll)) *100).ToString().Substring(0, 4) + "% (" + d.TregAll.ToString() + ")";
-                        string tarifreg = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("P") + "  (" + d.TregAll.ToString() + ")";
-                        result[k, 19] = tarifreg;
+                        result[k, 19] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("p") + "  (" + d.TregAll.ToString() + ")";
                         k++;
                         break;
                     }
@@ -565,11 +562,9 @@ namespace Подсчет_начислений
             string resPath = new OpenExcelFile().Filenamereturn();
             if (resPath == "can not open file")
                 return;
-            insert(resPath,result, dilers.Count,22);
+            insert(resPath,result, dilers.Count,columnsinresult);
 
-
-
-            win.MessageBox.Show(NotFound,"Конец");
+            win.MessageBox.Show(NotFound,"Конец программы");
         }
 
 
@@ -690,6 +685,7 @@ namespace Подсчет_начислений
             }
         }
 
+
         public void basaseach(ref List<diler> dilers,string BasePath,string[] DatePeriod, int list,string a)
         {
             object[][] basearr = getarray(BasePath, list, new int[] { 2, 11, 10, 18, 15 });
@@ -703,7 +699,7 @@ namespace Подсчет_начислений
                     if ((basearr[4][i].ToString() != "МТС" && basearr[4][i].ToString() != "МТС") || basearr[1][i] == null)
                         continue;
                 else if (Combobox.Text == "Megafon")
-                    if ((basearr[4][i].ToString() != "МТС" && basearr[4][i].ToString() != "МТС") || basearr[1][i] == null)
+                    if ((basearr[4][i].ToString() != "Мфон Дилерский" && basearr[4][i].ToString() != "Мфон Дил ЗФ") || basearr[1][i] == null)
                         continue;
                 if (basearr[2][i] == null && basearr[3][i] == null)
                 {
