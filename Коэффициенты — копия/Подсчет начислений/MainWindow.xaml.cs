@@ -77,7 +77,6 @@ namespace Подсчет_начислений
 
             int Rows = excelworksheet.UsedRange.Rows.Count;
             int Columns = excelworksheet.UsedRange.Columns.Count;
-
             object[][] arr = new object[columns.Length][];
 
             int icolumn = 0;
@@ -88,7 +87,7 @@ namespace Подсчет_начислений
                     if (column == i)
                     {
                         object[,] massiv;
-                        arr[icolumn] = new object[Rows - 1];
+                        arr[icolumn] = new object[Rows];
                         range = excelworksheet.get_Range(R1C1[i] + "2:" + R1C1[i] + Rows.ToString());
                         massiv = (System.Object[,])range.get_Value(Type.Missing);
                         arr[icolumn] = massiv.Cast<object>().ToArray();
@@ -647,6 +646,7 @@ namespace Подсчет_начислений
                 {
                     string TT = (ali[4][i].ToString() == null || ali[4][i].ToString() == "" || ali[4][i] == null) ? "" : ali[4][i].ToString() + " - ";
                     string DD = (ali[1][i] == null) ? " " : ali[1][i].ToString();
+
                     ins[i, 0] = TT + DD;
                     ins[i, 2] = ali[0][i];
                     ins[i, 1] = ali[2][i];
@@ -657,32 +657,37 @@ namespace Подсчет_начислений
                 if (resPath == "can not open file")
                     return;
                 insert(resPath, ins, N, 4);
-
-                win.MessageBox.Show(ali[0][10].ToString());
             }
 
             
             //МЕГА
             if (Combobox.Text == "Megafon")
             {
-                object[][] ali = getarray(ComisPath,1, new int[] { 23, 56, 15, 10 });
+                object[][] ali = getarray(ComisPath,1, new int[] {10, 15, 48, 56, 66});
+
                 int N = ali[0].Length;
                 object[,] ins = new object[N, 4];
+
                 for (int i = 0; i < N; i++)
                 {
-                    ins[i, 0] = ali[2][i];
-                    ins[i, 1] = dateinper(ali[0][i].ToString()) - 1;
-                    ins[i, 2] = (ali[1][i] == null) ? 0 : ali[1][i];
-                    ins[i, 3] = ali[3][i];
+                    string TT = "";
+                    if (ali[4][i] != null)
+                        TT = ( ali[4][i].ToString() == "" ) ? "" : ali[4][i].ToString() + " - ";
+                    string DD = (ali[3][i] == null) ? " " : ali[3][i].ToString();
+
+                    ins[i, 0] = TT + DD;
+                    ins[i, 1] = dateinper(ali[1][i].ToString());
+                    ins[i, 2] = (ali[2][i] == null) ? 0 : ali[2][i];
+                    ins[i, 3] = ali[0][i];
                 }
 
                 string resPath = new OpenExcelFile().Filenamereturn();
                 if (resPath == "can not open file")
                     return;
                 insert(resPath, ins, N, 4);
-
-                win.MessageBox.Show(ali[0][10].ToString());
             }
+
+            win.MessageBox.Show("Конец");
         }
 
 
@@ -703,9 +708,10 @@ namespace Подсчет_начислений
                         continue;
                 if (basearr[2][i] == null && basearr[3][i] == null)
                 {
-                    esd++;
                     continue;
                 }
+                if (basearr[1][i] == null)
+                    continue;
 
                 foreach (string date in DatePeriod)
                 {
