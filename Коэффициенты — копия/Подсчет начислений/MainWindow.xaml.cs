@@ -234,9 +234,11 @@ namespace Подсчет_начислений
             public int TregAll;
 
             public int smart;
+            public int yourCountry;
             public int allIn;
             public int warmWelc;
             public int smartAll;
+            public int yourCountryAll;
             public int allInAll;
             public int warmWelcAll;
 
@@ -247,7 +249,7 @@ namespace Подсчет_начислений
             public double sumWithPred;
 
 
-            public diler (object NAME, bool fir, bool sec, bool thi, bool from4, bool from7,object nachislenia,bool abonent,bool regula, bool abonentAll, bool regulaAll, bool SecondMonth, bool AllInBool, bool AllIn, bool SmartBool, bool Smart, bool WarmWelcBool, bool WarmWelc,double predel)
+            public diler (object NAME, bool fir, bool sec, bool thi, bool from4, bool from7,object nachislenia,bool abonent,bool regula, bool abonentAll, bool regulaAll, bool SecondMonth, bool AllInBool, bool AllIn, bool SmartBool, bool Smart,bool YourCountryBool,bool YourCountry, bool WarmWelcBool, bool WarmWelc,double predel)
             {
                 name = NAME;
 
@@ -258,7 +260,9 @@ namespace Подсчет_начислений
                 count120712 = (from7) ? 1 : 0;
 
                 smart = (Smart) ? 1 : 0;
+                yourCountry = (YourCountry) ? 1 : 0;
                 smartAll = (SmartBool)? 1 : 0;
+                yourCountryAll = (YourCountryBool) ? 1 : 0;
                 allIn = (AllIn) ? 1 : 0;
                 allInAll = (AllInBool) ? 1 : 0;
                 warmWelc = (WarmWelc) ? 1 : 0;
@@ -404,10 +408,12 @@ namespace Подсчет_начислений
                 bool regulaAll = false;
 
                 bool SmartBool = false;
+                bool YourCountryBool = false;
                 bool WarmWelcBool = false;
                 bool AllInBool = false;
 
                 bool Smart = false;
+                bool YourCountry = false;
                 bool WarmWelc = false;
                 bool AllIn = false;
                 double predel = 0;
@@ -430,6 +436,9 @@ namespace Подсчет_начислений
 
                     if (ComisAr[i, 4].ToString().Contains("Тёплый приём"))
                         WarmWelcBool = true;
+
+                    if (ComisAr[i, 4].ToString().Contains("Твоя страна"))
+                        YourCountryBool = true;
                 }
                 else
                     if (!NotFound.Contains(ComisAr[i, 4].ToString()))
@@ -456,6 +465,9 @@ namespace Подсчет_начислений
 
                         if (WarmWelcBool)
                             WarmWelc = true;
+
+                        if (YourCountryBool)
+                            YourCountry = true;
                     }
                     else
                         if (!NotFound.Contains(ComisAr[i, 4].ToString()))
@@ -538,7 +550,9 @@ namespace Подсчет_начислений
                         if (AllIn) d.allIn++;
                         if (AllInBool) d.allInAll++;
                         if (Smart) d.smart++;
+                        if (YourCountry) d.yourCountry++;
                         if (SmartBool) d.smartAll++;
+                        if (YourCountryBool) d.yourCountryAll++;
                         if (WarmWelc) d.warmWelc++;
                         if (WarmWelcBool) d.warmWelcAll++;
 
@@ -548,7 +562,7 @@ namespace Подсчет_начислений
 
                 if (!find)
                 {
-                    dilers.Add(new diler(ComisAr[i, 1],first,second,third,from4to6,from7to12,nach,abonent,regula,abonentAll,regulaAll,SecondMonth,AllInBool,AllIn,SmartBool,Smart,WarmWelcBool,WarmWelc,predel));
+                    dilers.Add(new diler(ComisAr[i, 1],first,second,third,from4to6,from7to12,nach,abonent,regula,abonentAll,regulaAll,SecondMonth,AllInBool,AllIn,SmartBool,Smart,YourCountryBool,YourCountry,WarmWelcBool,WarmWelc,predel));
                 }
             }
 
@@ -643,7 +657,8 @@ namespace Подсчет_начислений
                         result[k, 30] = 0;
                         if (Combobox.Text == "Megafon" && d.warmWelcAll != 0)
                             result[k, 30] = Math.Round(d.warmWelc / Convert.ToDouble(d.warmWelcAll), 2).ToString("P") + "  (" + d.warmWelcAll.ToString() + ")";
-
+                        if (Combobox.Text == "MTC" && d.yourCountryAll != 0)
+                            result[k, 30] = Math.Round(d.yourCountry / Convert.ToDouble(d.yourCountryAll), 2).ToString("P") + "  (" + d.yourCountryAll.ToString() + ")";
                         k++;
                         break;
                     }
