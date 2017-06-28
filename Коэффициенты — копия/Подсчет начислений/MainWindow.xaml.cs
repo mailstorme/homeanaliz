@@ -36,7 +36,7 @@ namespace Подсчет_начислений
         string[] R1C1 = new string[] { "0", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ", "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM", "BN", "BO", "BP", "BQ", "BR", "BS", "BT", "BU", "BV", "BW", "BX", "BY", "BZ", "CA", "CB", "CC", "CD", "CE", "CF", "CG", "CH", "CI", "CJ", "CK", "CL", "CM", "CN", "CO", "CP", "CQ", "CR", "CS", "CT", "CU", "CV", "CW", "CX", "CY", "CZ", "DA", "DB", "DC", "DD", "DE", "DF", "DG", "DH", "DI", "DJ", "DK", "DL", "DM", "DN", "DO", "DP", "DQ", "DR", "DS", "DT", "DU", "DV", "DW", "DX", "DY", "DZ", "EA", "EB", "EC", "ED", "EE", "EF", "EG", "EH", "EI", "EJ", "EK", "EL", "EM", "EN", "EO", "EP", "EQ", "ER", "ES", "ET", "EU", "EV", "EW", "EX", "EY", "EZ" };
         string[] Date = new string[] {".04.2017", ".03.2017", ".02.2017", ".01.2017", ".12.2016", ".11.2016", ".10.2016", ".09.2016", ".08.2016", ".07.2016", ".06.2016", ".05.2016", ".04.2016", ".03.2016", ".02.2016", ".01.2016", };
         int esd;
-        
+        string Podkl;
 
         public MainWindow()
         {
@@ -211,7 +211,7 @@ namespace Подсчет_начислений
      
 
 
-
+        
 
         public class diler
         {
@@ -228,32 +228,55 @@ namespace Подсчет_начислений
             public int count12046;
             public int count120712;
 
-            public int second; 
-
             public int Tab;
             public int TabAll;
             public int Treg;
             public int TregAll;
 
+            public int smart;
+            public int yourCountry;
+            public int allIn;
+            public int warmWelc;
+            public int smartAll;
+            public int yourCountryAll;
+            public int allInAll;
+            public int warmWelcAll;
+
+
+            public int secondmonth;
+
             public double sum;
+            public double sumWithPred;
 
 
-            public diler (object NAME, bool fir, bool sec, bool thi, bool from4, bool from7,object nachislenia,bool abonent,bool regula, bool abonentAll, bool regulaAll,bool secondmonth)
+            public diler (object NAME, bool fir, bool sec, bool thi, bool from4, bool from7,object nachislenia,bool abonent,bool regula, bool abonentAll, bool regulaAll, bool SecondMonth, bool AllInBool, bool AllIn, bool SmartBool, bool Smart,bool YourCountryBool,bool YourCountry, bool WarmWelcBool, bool WarmWelc,double predel)
             {
                 name = NAME;
 
-                count1201 = (fir) ? 1 : 0; 
+                count1201 = (fir) ? 1 : 0;
                 count1202 = (sec) ? 1 : 0;
                 count1203 = (thi) ? 1 : 0;
                 count12046 = (from4) ? 1 : 0;
                 count120712 = (from7) ? 1 : 0;
-                second = (secondmonth) ? 1 : 0;
+
+                smart = (Smart) ? 1 : 0;
+                yourCountry = (YourCountry) ? 1 : 0;
+                smartAll = (SmartBool)? 1 : 0;
+                yourCountryAll = (YourCountryBool) ? 1 : 0;
+                allIn = (AllIn) ? 1 : 0;
+                allInAll = (AllInBool) ? 1 : 0;
+                warmWelc = (WarmWelc) ? 1 : 0;
+                warmWelcAll = (WarmWelcBool) ? 1 : 0;
+
+                secondmonth = (SecondMonth) ? 1 : 0;
+
                 b = 0;
                 a = 0;
                 Tab = 0;
                 TabAll = 0;
                 Treg = 0;
                 TregAll = 0;
+
 
                 if (abonent)
                     Tab++;
@@ -267,6 +290,10 @@ namespace Подсчет_начислений
 
                 allincom = 1;
                 sum += Convert.ToDouble(nachislenia);
+                sumWithPred += predel;
+
+                
+                
             }
         }
 
@@ -286,13 +313,13 @@ namespace Подсчет_начислений
             string path2 = "";
             if (Combobox.Text == "Megafon")
             {
-                path1 = @"C:\Users\Andrei\Desktop\абонентская.txt"; //мега
-                path2 = @"C:\Users\Andrei\Desktop\регулярная.txt";
+                path1 = @"C:\Users\Andrey\Desktop\Мега абонентская.txt"; //мега
+                path2 = @"C:\Users\Andrey\Desktop\Мега регулярная.txt";
             }
             if (Combobox.Text == "MTC")
             {
-                path1 = @"C:\Users\Andrei\Desktop\МтсАбонент.txt";
-                path2 = @"C:\Users\Andrei\Desktop\МтсРегуляр.txt";
+                path1 = @"C:\Users\Andrey\Desktop\МтсАбонент.txt";
+                path2 = @"C:\Users\Andrey\Desktop\МтсРегуляр.txt";
             }
             string abonents = System.IO.File.ReadAllText(path1).Replace("\n", " ");
             string regular = System.IO.File.ReadAllText(path2).Replace("\n", " ");
@@ -362,7 +389,8 @@ namespace Подсчет_начислений
             
             for (int i = 2; i <= Rows; i++)
             {
-                if (Convert.ToInt32(ComisAr[i, 2]) > period)
+                int PeriodNabludenia = Convert.ToInt32(ComisAr[i, 2]); 
+                if (PeriodNabludenia > period)
                     continue;
                 
                 if (ComisAr[i, 1] == null || ComisAr[i, 1].ToString() == "" || ComisAr[i, 1].ToString() == " " || ComisAr[i, 1].ToString() == null)
@@ -379,15 +407,38 @@ namespace Подсчет_начислений
                 bool abonentAll = false;
                 bool regulaAll = false;
 
-                bool secondmonth = false;
+                bool SmartBool = false;
+                bool YourCountryBool = false;
+                bool WarmWelcBool = false;
+                bool AllInBool = false;
+
+                bool Smart = false;
+                bool YourCountry = false;
+                bool WarmWelc = false;
+                bool AllIn = false;
+                double predel = 0;
+
 
                 if (abonents.Contains(ComisAr[i, 4].ToString()))
                 {
                     abonentAll = true;
+
+                    if (ComisAr[i, 4].ToString().Contains("Smart"))
+                        SmartBool = true;
+
+                    if (ComisAr[i, 4].ToString().Contains("Всё включено"))
+                        AllInBool = true;
                 }
+
                 else if (regular.Contains(ComisAr[i, 4].ToString()))
                 {
                     regulaAll = true;
+
+                    if (ComisAr[i, 4].ToString().Contains("Тёплый приём"))
+                        WarmWelcBool = true;
+
+                    if (ComisAr[i, 4].ToString().Contains("Твоя страна"))
+                        YourCountryBool = true;
                 }
                 else
                     if (!NotFound.Contains(ComisAr[i, 4].ToString()))
@@ -398,13 +449,25 @@ namespace Подсчет_начислений
 
                 if (nach >= 120)
                 {
-                    if (abonents.Contains(ComisAr[i, 4].ToString()))
+                    if (abonentAll)
                     {
                         abonent = true;
+
+                        if (SmartBool)
+                            Smart = true;
+
+                        if (AllInBool)
+                            AllIn = true;
                     }
-                    else if (regular.Contains(ComisAr[i, 4].ToString()))
+                    else if (regulaAll)
                     {
                         regula = true;
+
+                        if (WarmWelcBool)
+                            WarmWelc = true;
+
+                        if (YourCountryBool)
+                            YourCountry = true;
                     }
                     else
                         if (!NotFound.Contains(ComisAr[i, 4].ToString()))
@@ -412,7 +475,7 @@ namespace Подсчет_начислений
 
 
 
-                    switch (Convert.ToInt32(ComisAr[i, 2]))
+                    switch (PeriodNabludenia)
                     {
                         case 1:
                             first = true;
@@ -436,9 +499,20 @@ namespace Подсчет_начислений
                             from7to12 = true;
                             break;
                     }
+
+                    if (Combobox.Text == "MTC" && !Smart)
+                        predel = Nachisl(nach, first, second, third, from4to6, from7to12, 2);
+
+                    if (Combobox.Text == "MTC" && Smart)
+                        predel = Nachisl(nach, first, second, third, from4to6, from7to12, 1);
+
+                    if (Combobox.Text == "Megafon")
+                        predel = Nachisl(nach, first, second, third, from4to6, from7to12, 3);
+
                 }
 
-                secondmonth = (Convert.ToInt32(ComisAr[i, 2]) == 2) ? true : false;
+                bool SecondMonth = (PeriodNabludenia == 2) ? true : false;
+
 
                 bool find = false;
                 foreach (diler d in dilers)
@@ -446,6 +520,7 @@ namespace Подсчет_начислений
                     if (d.name.ToString() == ComisAr[i, 1].ToString())
                     {
                         d.sum += nach;
+                        d.sumWithPred += predel;
 
                         if (abonent)
                             d.Tab++;
@@ -470,13 +545,24 @@ namespace Подсчет_начислений
                             d.count12046++;
                         if (from7to12)
                             d.count120712++;
+
+                        if (SecondMonth) d.secondmonth++;
+                        if (AllIn) d.allIn++;
+                        if (AllInBool) d.allInAll++;
+                        if (Smart) d.smart++;
+                        if (YourCountry) d.yourCountry++;
+                        if (SmartBool) d.smartAll++;
+                        if (YourCountryBool) d.yourCountryAll++;
+                        if (WarmWelc) d.warmWelc++;
+                        if (WarmWelcBool) d.warmWelcAll++;
+
                         break;
                     }
                 }
 
                 if (!find)
                 {
-                    dilers.Add(new diler(ComisAr[i, 1],first,second,third,from4to6,from7to12,nach,abonent,regula,abonentAll,regulaAll,secondmonth));
+                    dilers.Add(new diler(ComisAr[i, 1],first,second,third,from4to6,from7to12,nach,abonent,regula,abonentAll,regulaAll,SecondMonth,AllInBool,AllIn,SmartBool,Smart,YourCountryBool,YourCountry,WarmWelcBool,WarmWelc,predel));
                 }
             }
 
@@ -511,7 +597,7 @@ namespace Подсчет_начислений
                 return;
             object[][] tochki = getarray(toch,1, new int[] {3,1});
 
-            int columnsinresult = 21;
+            int columnsinresult = 31;
             object[,] result = new object[dilers.Count, columnsinresult];
 
             int k = 0;
@@ -542,19 +628,37 @@ namespace Подсчет_начислений
                         result[k, 11] = Math.Round((d.count1203 / Convert.ToDouble(d.allincom)),4);
                         result[k, 12] = Math.Round((d.count12046 / Convert.ToDouble(d.allincom)),4);
                         result[k, 13] = Math.Round((d.count120712 / Convert.ToDouble(d.allincom)),4);
-                        result[k, 14] = Math.Round((d.sum / Convert.ToDouble(d.allincom)),2);
-                        result[k, 15] = Math.Round((d.sum / Convert.ToDouble(d.a + d.b)),2);
+                        result[k, 14] = Math.Round((d.sum / Convert.ToDouble(d.allincom)),0);
+                        result[k, 15] = Math.Round((d.sum / Convert.ToDouble(d.a + d.b)),0);
                         result[k, 16] = Math.Round((Convert.ToDouble(d.count1201) / Convert.ToDouble(d.a + d.b)),4);
                         result[k, 17] = Math.Round(((d.count1201 + d.count1202 + d.count1203) / Convert.ToDouble(d.a + d.b)),4);
                         result[k, 18] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
                         result[k, 19] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("p") + "  (" + d.TregAll.ToString() + ")";
 
-                        result[k, 0] = d.name;
-                        result[k, 20] = d.count1201.ToString() +"+"+ d.count1202.ToString() +"+"+ d.count1203.ToString() +"+"+ d.count12046.ToString() + "+" + d.count120712 + "  (" + d.allincom + ")";
-                        result[k, 20] = (d.second!=0) ? Math.Round((d.count1202/ Convert.ToDouble(d.second)), 3).ToString("P") + "  (" + d.second.ToString() + ")" : "-";
-                        result[k, 18] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
-                        result[k, 19] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("p") + "  (" + d.TregAll.ToString() + ")";
 
+                        result[k, 20] = result[k, 18];
+                        result[k, 21] = result[k, 19];
+                        result[k, 22] = result[k, 10] = (Math.Round((d.count1202 / Convert.ToDouble(d.allincom)), 3)).ToString("P");
+                        result[k, 23] = (Math.Round((d.count1202 / Convert.ToDouble(d.secondmonth)), 2)*100) + "% (" + d.secondmonth.ToString() + ")";
+                        result[k, 24] = Math.Round((d.sum / Convert.ToDouble(d.allincom)), 0);
+
+                        result[k, 25] = d.count1201.ToString() + ":" + d.count1202.ToString() + ":" + d.count1203.ToString() + ":" 
+                            + (d.count12046 + d.count120712).ToString() + "  (" + d.allincom.ToString() + ")";
+                        result[k, 26] = d.allincom.ToString() +" | "+ (d.b + d.a).ToString();
+                        result[k, 27] = Math.Round(d.sum, 0).ToString() + " | " + Math.Round(d.sumWithPred,0).ToString();
+                        result[k, 28] = Math.Round((d.sumWithPred / Convert.ToDouble(d.allincom)), 0);
+
+                        result[k, 29] = 0;
+                        if (Combobox.Text == "Megafon" && d.allInAll!=0)
+                            result[k, 29] = Math.Round(d.allIn / Convert.ToDouble(d.allInAll), 2).ToString("P") + "  (" + d.allInAll.ToString() + ")";
+                        if (Combobox.Text == "MTC" && d.smartAll !=0)
+                            result[k, 29] = Math.Round(d.smart / Convert.ToDouble(d.smartAll), 2).ToString("P") + "  (" + d.smartAll.ToString() + ")";
+
+                        result[k, 30] = 0;
+                        if (Combobox.Text == "Megafon" && d.warmWelcAll != 0)
+                            result[k, 30] = Math.Round(d.warmWelc / Convert.ToDouble(d.warmWelcAll), 2).ToString("P") + "  (" + d.warmWelcAll.ToString() + ")";
+                        if (Combobox.Text == "MTC" && d.yourCountryAll != 0)
+                            result[k, 30] = Math.Round(d.yourCountry / Convert.ToDouble(d.yourCountryAll), 2).ToString("P") + "  (" + d.yourCountryAll.ToString() + ")";
                         k++;
                         break;
                     }
@@ -693,6 +797,52 @@ namespace Подсчет_начислений
             win.MessageBox.Show("Конец");
         }
 
+        static private double Nachisl(double nach, bool m1, bool m2, bool m3, bool m4, bool m5,int k)
+        {
+            double Nach = 0;
+            if (k == 1)
+            {
+                if (m1)
+                    Nach = (nach > 4000) ? 4000 : nach;
+                else if (m2)
+                    Nach = (nach > 3000) ? 3000 : nach;
+                else if (m3)
+                    Nach = (nach > 2500) ? 2500 : nach;
+                else if (m4)
+                    Nach = (nach > 1500) ? 1500 : nach;
+                else if (m5)
+                    Nach = (nach > 1000) ? 1000 : nach;
+            }
+
+            if (k == 2)
+            {
+                if (m1)
+                    Nach = (nach > 2000) ? 2000 : nach;
+                else if (m2)
+                    Nach = (nach > 1500) ? 1500 : nach;
+                else if (m3)
+                    Nach = (nach > 800) ? 800 : nach;
+                else if (m4)
+                    Nach = (nach > 600) ? 600 : nach;
+                else if (m5)
+                    Nach = (nach > 500) ? 500 : nach;
+            }
+
+            if (k == 3)
+            {
+                if (m1)
+                    Nach = (nach > 6000) ? 6000 : nach;
+                else if (m2)
+                    Nach = (nach > 5500) ? 5500 : nach;
+                else if (m3)
+                    Nach = (nach > 4000) ? 4000 : nach;
+                else if (m4)
+                    Nach = (nach > 3000) ? 3000 : nach;
+                else if (m5)
+                    Nach = (nach > 3000) ? 3000 : nach;
+            }
+            return Nach;
+        }
 
         public void basaseach(ref List<diler> dilers,string BasePath,string[] DatePeriod, int list,string a)
         {
