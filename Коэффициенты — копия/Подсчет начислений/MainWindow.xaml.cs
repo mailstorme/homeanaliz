@@ -228,6 +228,8 @@ namespace Подсчет_начислений
             public int count12046;
             public int count120712;
 
+            public int second; 
+
             public int Tab;
             public int TabAll;
             public int Treg;
@@ -236,33 +238,22 @@ namespace Подсчет_начислений
             public double sum;
 
 
-            public diler (object NAME, bool fir, bool sec, bool thi, bool from4, bool from7,object nachislenia,bool abonent,bool regula, bool abonentAll, bool regulaAll)
+            public diler (object NAME, bool fir, bool sec, bool thi, bool from4, bool from7,object nachislenia,bool abonent,bool regula, bool abonentAll, bool regulaAll,bool secondmonth)
             {
                 name = NAME;
 
-                count1201 = 0;
-                count1202 = 0;
-                count1203 = 0;
-                count12046 = 0;
-                count120712 = 0;
+                count1201 = (fir) ? 1 : 0; 
+                count1202 = (sec) ? 1 : 0;
+                count1203 = (thi) ? 1 : 0;
+                count12046 = (from4) ? 1 : 0;
+                count120712 = (from7) ? 1 : 0;
+                second = (secondmonth) ? 1 : 0;
                 b = 0;
                 a = 0;
                 Tab = 0;
                 TabAll = 0;
                 Treg = 0;
                 TregAll = 0;
-
-
-                if (fir)
-                    count1201 = 1;
-                if (sec)
-                    count1202 = 1;
-                if (thi)
-                    count1203 = 1;
-                if(from4)
-                    count12046 = 1;
-                if (from7)
-                    count120712 = 1;
 
                 if (abonent)
                     Tab++;
@@ -388,6 +379,8 @@ namespace Подсчет_начислений
                 bool abonentAll = false;
                 bool regulaAll = false;
 
+                bool secondmonth = false;
+
                 if (abonents.Contains(ComisAr[i, 4].ToString()))
                 {
                     abonentAll = true;
@@ -445,6 +438,8 @@ namespace Подсчет_начислений
                     }
                 }
 
+                secondmonth = (Convert.ToInt32(ComisAr[i, 2]) == 2) ? true : false;
+
                 bool find = false;
                 foreach (diler d in dilers)
                 {
@@ -481,7 +476,7 @@ namespace Подсчет_начислений
 
                 if (!find)
                 {
-                    dilers.Add(new diler(ComisAr[i, 1],first,second,third,from4to6,from7to12,nach,abonent,regula,abonentAll,regulaAll));
+                    dilers.Add(new diler(ComisAr[i, 1],first,second,third,from4to6,from7to12,nach,abonent,regula,abonentAll,regulaAll,secondmonth));
                 }
             }
 
@@ -516,7 +511,7 @@ namespace Подсчет_начислений
                 return;
             object[][] tochki = getarray(toch,1, new int[] {3,1});
 
-            int columnsinresult = 20;
+            int columnsinresult = 21;
             object[,] result = new object[dilers.Count, columnsinresult];
 
             int k = 0;
@@ -553,6 +548,13 @@ namespace Подсчет_начислений
                         result[k, 17] = Math.Round(((d.count1201 + d.count1202 + d.count1203) / Convert.ToDouble(d.a + d.b)),4);
                         result[k, 18] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
                         result[k, 19] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("p") + "  (" + d.TregAll.ToString() + ")";
+
+                        result[k, 0] = d.name;
+                        result[k, 20] = d.count1201.ToString() +"+"+ d.count1202.ToString() +"+"+ d.count1203.ToString() +"+"+ d.count12046.ToString() + "+" + d.count120712 + "  (" + d.allincom + ")";
+                        result[k, 20] = (d.second!=0) ? Math.Round((d.count1202/ Convert.ToDouble(d.second)), 3).ToString("P") + "  (" + d.second.ToString() + ")" : "-";
+                        result[k, 18] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
+                        result[k, 19] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("p") + "  (" + d.TregAll.ToString() + ")";
+
                         k++;
                         break;
                     }
