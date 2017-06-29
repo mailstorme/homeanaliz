@@ -10,7 +10,7 @@
     <Grid>
         <Button Content="Подсчёт" HorizontalAlignment="Left" Margin="16,134,0,0" VerticalAlignment="Top" Width="84" Height="36" Click="Button_Click_1"/>
         <Button Content="Создать excel" HorizontalAlignment="Left" Margin="278,150,0,0" VerticalAlignment="Top" Width="84" Click="Button_Click_2"/>
-        <ComboBox x:Name="Combobox" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" SelectedIndex="0">
+        <ComboBox x:Name="Combobox" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="75" SelectedIndex="-1">
             <TextBlock>MTC</TextBlock>
             <TextBlock>Megafon</TextBlock>
         </ComboBox>

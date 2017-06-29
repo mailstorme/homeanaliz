@@ -35,13 +35,12 @@ namespace Подсчет_начислений
     {
         string[] R1C1 = new string[] { "0", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ", "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM", "BN", "BO", "BP", "BQ", "BR", "BS", "BT", "BU", "BV", "BW", "BX", "BY", "BZ", "CA", "CB", "CC", "CD", "CE", "CF", "CG", "CH", "CI", "CJ", "CK", "CL", "CM", "CN", "CO", "CP", "CQ", "CR", "CS", "CT", "CU", "CV", "CW", "CX", "CY", "CZ", "DA", "DB", "DC", "DD", "DE", "DF", "DG", "DH", "DI", "DJ", "DK", "DL", "DM", "DN", "DO", "DP", "DQ", "DR", "DS", "DT", "DU", "DV", "DW", "DX", "DY", "DZ", "EA", "EB", "EC", "ED", "EE", "EF", "EG", "EH", "EI", "EJ", "EK", "EL", "EM", "EN", "EO", "EP", "EQ", "ER", "ES", "ET", "EU", "EV", "EW", "EX", "EY", "EZ" };
         string[] Date = new string[] {".04.2017", ".03.2017", ".02.2017", ".01.2017", ".12.2016", ".11.2016", ".10.2016", ".09.2016", ".08.2016", ".07.2016", ".06.2016", ".05.2016", ".04.2016", ".03.2016", ".02.2016", ".01.2016", };
-        int esd;
+        int TariffsCheck;
         string Podkl;
 
         public MainWindow()
         {
             InitializeComponent();
-            esd = 0;
         }
 
 
@@ -97,32 +96,6 @@ namespace Подсчет_начислений
                 }
             }
 
-            #region прошлый вариант взятия колонок
-            /*
-            int icount = 0;
-            for (int i = 0; i < Columns + 1; i++)
-                if (i == c1 || i == c2 || i == c3)
-                {
-                    object[,] massiv;
-                    arr[icount] = new object[Rows - 1];
-                    range = excelworksheet.get_Range(R1C1[i] + "2:" + R1C1[i] + Rows.ToString());
-                    massiv = (System.Object[,])range.get_Value(Type.Missing);
-                    arr[icount] = massiv.Cast<object>().ToArray();
-                    icount++;
-                }
-            for (int i = 0; i < Columns + 1; i++)
-                if (i == tarif)
-                {
-                    object[,] massiv;
-                    arr[icount] = new object[Rows - 1];
-                    range = excelworksheet.get_Range(R1C1[i] + "2:" + R1C1[i] + Rows.ToString());
-                    massiv = (System.Object[,])range.get_Value(Type.Missing);
-                    arr[icount] = massiv.Cast<object>().ToArray();
-                    icount++;
-                }
-                */
-#endregion
-
             #region Закрытие Excel
 
             book.Close(false,false,false);
@@ -140,6 +113,7 @@ namespace Подсчет_начислений
             
             return arr;
         }
+
 
 
         private object[][] getbasearray(string path)
@@ -208,92 +182,135 @@ namespace Подсчет_начислений
         }
         #endregion
 
-     
 
 
-        
+        #region ПЕРЕПИСЫВАЮ ЦИКЛ ПРЕОБРАЗОВАНИЯ В СПИСОК
+
+        public List<diler> ListCreate(object[,] ComisAr, int period, string abonents, string regular, string NotFound, string[] tariffs)
+        {
+            List<diler> dilers = new List<diler>();
+            int N = ComisAr.GetLength(0);
+            int K = tariffs.Length;
+
+            for (int i = 2; i <= N; i++)
+            {
+                if (ComisAr[i, 1] == null || ComisAr[i, 1].ToString() == "" || ComisAr[i, 1].ToString() == " " || ComisAr[i, 1].ToString() == null)
+                    continue;
+
+                int PeriodNabludenia = Convert.ToInt32(ComisAr[i, 2]);
+                if (PeriodNabludenia > period)
+                    continue;
+
+
+
+                double nach = Convert.ToDouble(ComisAr[i, 3]);
+                double predel = 0;
+
+
+                bool findtarif = false;
+                int tariffID = 0;
+                for (int j = 0; j < K; j++)
+                {
+                    if (tariffs[j] == ComisAr[i, 4].ToString())
+                    {
+                        tariffID = j;
+                        findtarif = true;
+                        break;
+                    }
+                }
+                if (!findtarif)
+                {
+                    TariffsCheck++;
+
+                    if (!NotFound.Contains(ComisAr[i, 4].ToString()))
+                        NotFound += ComisAr[i, 4].ToString() + " ;   ";
+                }
+
+
+                if (nach >= 120)
+                {
+                   
+                }
+
+                bool SecondMonth = (PeriodNabludenia == 2) ? true : false;
+
+
+                bool find = false;
+                foreach (diler d in dilers)
+                {
+                    if (d.name.ToString() == ComisAr[i, 1].ToString())
+                    {
+                        d.sum += nach;
+                        d.sumWithPred += predel;
+
+                        
+
+                        break;
+                    }
+                }
+
+                if (!find)
+                {
+                    //dilers.Add(new diler(ComisAr[i, 1], first, second, third, from4to6, from7to12, nach, abonent, regula, abonentAll, regulaAll, SecondMonth, AllInBool, AllIn, SmartBool, Smart, YourCountryBool, YourCountry, WarmWelcBool, WarmWelc, predel));
+                }
+            }
+
+
+
+
+            return dilers;
+        }
+        #endregion
+
 
         public class diler
         {
             public object name;
             //public object kodTT;
 
-            public int b;
-            public int a;
+            public int inBase;
+            public int inArhiv;
             public int allincom;
-
-            public int count1201;
-            public int count1202;
-            public int count1203;
-            public int count12046;
-            public int count120712;
-
-            public int Tab;
-            public int TabAll;
-            public int Treg;
-            public int TregAll;
-
-            public int smart;
-            public int yourCountry;
-            public int allIn;
-            public int warmWelc;
-            public int smartAll;
-            public int yourCountryAll;
-            public int allInAll;
-            public int warmWelcAll;
-
-
-            public int secondmonth;
 
             public double sum;
             public double sumWithPred;
 
+            // новые переменные
+            tarifInfo[] Tariffs;
+            UserCount users;
+            
 
-            public diler (object NAME, bool fir, bool sec, bool thi, bool from4, bool from7,object nachislenia,bool abonent,bool regula, bool abonentAll, bool regulaAll, bool SecondMonth, bool AllInBool, bool AllIn, bool SmartBool, bool Smart,bool YourCountryBool,bool YourCountry, bool WarmWelcBool, bool WarmWelc,double predel)
+            public diler (object NAME, double nach)
             {
                 name = NAME;
 
-                count1201 = (fir) ? 1 : 0;
-                count1202 = (sec) ? 1 : 0;
-                count1203 = (thi) ? 1 : 0;
-                count12046 = (from4) ? 1 : 0;
-                count120712 = (from7) ? 1 : 0;
+                inBase = 0;
+                inArhiv = 0;
+                allincom = 0;
 
-                smart = (Smart) ? 1 : 0;
-                yourCountry = (YourCountry) ? 1 : 0;
-                smartAll = (SmartBool)? 1 : 0;
-                yourCountryAll = (YourCountryBool) ? 1 : 0;
-                allIn = (AllIn) ? 1 : 0;
-                allInAll = (AllInBool) ? 1 : 0;
-                warmWelc = (WarmWelc) ? 1 : 0;
-                warmWelcAll = (WarmWelcBool) ? 1 : 0;
-
-                secondmonth = (SecondMonth) ? 1 : 0;
-
-                b = 0;
-                a = 0;
-                Tab = 0;
-                TabAll = 0;
-                Treg = 0;
-                TregAll = 0;
-
-
-                if (abonent)
-                    Tab++;
-                else if (regula)
-                    Treg++;
-
-                if (abonentAll)
-                    TabAll++;
-                else if (regulaAll)
-                    TregAll++;
-
-                allincom = 1;
                 sum += Convert.ToDouble(nachislenia);
                 sumWithPred += predel;
 
-                
-                
+
+                //новый кусок
+                /*
+                int Nc = tarifs.Lenght;
+                for(int i = 0; i < Nc; i++)
+                {
+                    Tariffs[i].tarif = tarifs[i];
+                    Tariffs[i].count = 0;
+                    Tariffs[i].goodCount = 0;
+                }
+                */
+
+            }
+
+            public void AddCom(int period, int tariffID, double nach,string[] tarifs)
+            {
+                if (nach >= 120) Tariffs[tariffID].goodCount++;
+                else Tariffs[tariffID].count++;
+
+
             }
         }
 
@@ -301,8 +318,32 @@ namespace Подсчет_начислений
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            win.MessageBox.Show(Combobox.Text);
-            int period =  Convert.ToInt32(Period.Text);
+
+            tarifInfo t = new tarifInfo("helllo");
+            t.goodCount++;
+            t.goodCount++;
+            win.MessageBox.Show(t.tarif + " " + t.goodCount.ToString() + " " + t.count.ToString());
+
+            return;
+
+
+            TariffsCheck = 0;
+
+            object[,] af = new object[10, 15];
+            win.MessageBox.Show(af.GetLength(0) + "  " + af.GetLength(1));
+            return;
+
+            if (Combobox.SelectedIndex == -1)
+            {
+                win.MessageBox.Show("Укажите оператора", "Ошибка");
+                return;
+            }
+            int period = (Period.Text != "") ? Convert.ToInt32(Period.Text) : 0 ;
+            if (period == 0)
+            {
+                win.MessageBox.Show("Укажите период", "Ошибка");
+                return;
+            }
             string[] DatePeriod = new string[period];
             for (int i = 0; i < period; i++)
             {
@@ -313,17 +354,24 @@ namespace Подсчет_начислений
             string path2 = "";
             if (Combobox.Text == "Megafon")
             {
-                path1 = @"C:\Users\Andrey\Desktop\Мега абонентская.txt"; //мега
-                path2 = @"C:\Users\Andrey\Desktop\Мега регулярная.txt";
+                path1 = @"C:\Users\Andrei\Desktop\Тарифы\Мега абонентская.txt"; //мега
+                path2 = @"C:\Users\Andrei\Desktop\Тарифы\Мега регулярная.txt";
             }
             if (Combobox.Text == "MTC")
             {
-                path1 = @"C:\Users\Andrey\Desktop\МтсАбонент.txt";
-                path2 = @"C:\Users\Andrey\Desktop\МтсРегуляр.txt";
+                path1 = @"C:\Users\Andrei\Desktop\Тарифы\МтсАбонент.txt";
+                path2 = @"C:\Users\Andrei\Desktop\Тарифы\МтсРегуляр.txt";
             }
             string abonents = System.IO.File.ReadAllText(path1).Replace("\n", " ");
             string regular = System.IO.File.ReadAllText(path2).Replace("\n", " ");
+
+            string[] AbArr  = System.IO.File.ReadAllLines(path1);
+            string[] RegArr = System.IO.File.ReadAllLines(path2);
+
             string NotFound = "";
+
+            List<diler> dilers = new List<diler>();
+
 
 
             string ComisPath = new OpenExcelFile().Filenamereturn();
@@ -374,18 +422,9 @@ namespace Подсчет_начислений
             CloseProcess(ExcelListBeforeStart);
 
 
-            string mas = "";
-            for (int i = 1; i <= 10; i++)
-            {
-                for (int j = 1; j <= Columns; j++)
-                {
-                    mas += ComisAr[i, j] + " ";
-                }
-                mas += "\n";
-            }
+            
 
 
-            List<diler> dilers = new List<diler>();
             
             for (int i = 2; i <= Rows; i++)
             {
