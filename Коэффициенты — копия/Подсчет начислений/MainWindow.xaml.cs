@@ -115,6 +115,54 @@ namespace Подсчет_начислений
         }
 
 
+        private object[,] getarray(string path, ref int Rows)
+        {
+            int Columns;
+
+            #region Открытие Excel
+            var ExcelApp = new Excel.Application();
+            ExcelApp.Visible = false;
+            Excel.Sheets excelsheets;
+            Excel.Worksheet excelworksheet;
+            //Excel.Workbooks workbooks;
+            Excel.Workbook book;
+            Excel.Range range;
+
+            book = ExcelApp.Workbooks.Open(path, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
+            //book.ActiveSheet.get_Item(1);
+            excelsheets = book.Worksheets;
+            excelworksheet = (Excel.Worksheet)excelsheets.get_Item(1);
+
+            #endregion
+            Process[] ExcelListBeforeStart = Process.GetProcessesByName("EXCEL");
+
+            Rows = excelworksheet.UsedRange.Rows.Count;
+            Columns = excelworksheet.UsedRange.Columns.Count;
+
+            object[,] ComisAr = new object[Rows, Columns + 1];
+
+            range = excelworksheet.get_Range(R1C1[1] + "1:" + R1C1[Columns] + Rows.ToString());
+            ComisAr = (System.Object[,])range.get_Value(Type.Missing);
+
+            #region Закрытие Excel
+
+            book.Close(false, false, false);
+
+            ExcelApp.Quit();
+
+            ExcelApp = null;
+            excelsheets = null;
+            excelworksheet = null;
+            //workbooks = null;
+            book = null;
+            range = null;
+            #endregion
+            CloseProcess(ExcelListBeforeStart);
+
+
+            return ComisAr;
+        }
+        
 
         private object[][] getbasearray(string path)
         {
@@ -186,7 +234,7 @@ namespace Подсчет_начислений
 
         #region ПЕРЕПИСЫВАЮ ЦИКЛ ПРЕОБРАЗОВАНИЯ В СПИСОК
 
-        public List<diler> ListCreate(object[,] ComisAr, int period, string abonents, string regular, string NotFound, string[] tariffs)
+        public List<diler> ListCreate(object[,] ComisAr, int period, string NotFound, string[] tariffs)
         {
             List<diler> dilers = new List<diler>();
             int N = ComisAr.GetLength(0);
@@ -276,41 +324,59 @@ namespace Подсчет_начислений
             public double sumWithPred;
 
             // новые переменные
-            tarifInfo[] Tariffs;
+            tarifInfo[] tariffs;
+            int between;
+
             UserCount users;
             
 
-            public diler (object NAME, double nach)
+            public diler (object NAME, string[] ab, string[] reg)
             {
                 name = NAME;
+
+                between = ab.Length;
+                tariffs = new tarifInfo[between + reg.Length];
+                int i = 0;
+                foreach (string t in ab)
+                {
+                    tariffs[i] = new tarifInfo(t);
+                    i++;
+                }
+                foreach (string t in reg)
+                {
+                    tariffs[i] = new tarifInfo(t);
+                    i++;
+                }
 
                 inBase = 0;
                 inArhiv = 0;
                 allincom = 0;
+                sum = 0;
+                sumWithPred = 0;
 
-                sum += Convert.ToDouble(nachislenia);
-                sumWithPred += predel;
-
-
-                //новый кусок
-                /*
-                int Nc = tarifs.Lenght;
-                for(int i = 0; i < Nc; i++)
-                {
-                    Tariffs[i].tarif = tarifs[i];
-                    Tariffs[i].count = 0;
-                    Tariffs[i].goodCount = 0;
-                }
-                */
-
+                users = new UserCount();
             }
 
-            public void AddCom(int period, int tariffID, double nach,string[] tarifs)
+            public void AddCom(int period, int tariffID, double nach)
             {
-                if (nach >= 120) Tariffs[tariffID].goodCount++;
-                else Tariffs[tariffID].count++;
+                allincom++;
+                double predel;
 
+                if (nach >= 120)
+                {
+                    tariffs[tariffID].goodCount++;
+                    users.AddGoodUser(period);
+                    predel = Predel(nach,tariffs[tariffID].tarif);
+                }
+                else
+                {
+                    users.AddBadUser(period);
+                    tariffs[tariffID].count++;
+                    predel = nach;
+                }
 
+                sum += nach;
+                sumWithPred += predel;
             }
         }
 
@@ -318,21 +384,9 @@ namespace Подсчет_начислений
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-
-            tarifInfo t = new tarifInfo("helllo");
-            t.goodCount++;
-            t.goodCount++;
-            win.MessageBox.Show(t.tarif + " " + t.goodCount.ToString() + " " + t.count.ToString());
-
-            return;
-
-
             TariffsCheck = 0;
 
-            object[,] af = new object[10, 15];
-            win.MessageBox.Show(af.GetLength(0) + "  " + af.GetLength(1));
-            return;
-
+            
             if (Combobox.SelectedIndex == -1)
             {
                 win.MessageBox.Show("Укажите оператора", "Ошибка");
@@ -367,243 +421,19 @@ namespace Подсчет_начислений
 
             string[] AbArr  = System.IO.File.ReadAllLines(path1);
             string[] RegArr = System.IO.File.ReadAllLines(path2);
+            string[] AllTariffs = AbArr.Union(RegArr).ToArray();
 
             string NotFound = "";
-
-            List<diler> dilers = new List<diler>();
-
-
 
             string ComisPath = new OpenExcelFile().Filenamereturn();
             if (ComisPath == "can not open file")
                 return;
-
-            int Rows;
-            int Columns;
-
-            #region Открытие Excel
-            var ExcelApp = new Excel.Application();
-            ExcelApp.Visible = false;
-            Excel.Sheets excelsheets;
-            Excel.Worksheet excelworksheet;
-            //Excel.Workbooks workbooks;
-            Excel.Workbook book;
-            Excel.Range range;
-
-            book = ExcelApp.Workbooks.Open(ComisPath, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
-            //book.ActiveSheet.get_Item(1);
-            excelsheets = book.Worksheets;
-            excelworksheet = (Excel.Worksheet)excelsheets.get_Item(1);
-
-            #endregion
-            Process[] ExcelListBeforeStart = Process.GetProcessesByName("EXCEL");
-
-            Rows = excelworksheet.UsedRange.Rows.Count;
-            Columns = excelworksheet.UsedRange.Columns.Count;
-
-            object[,] ComisAr = new object[Rows,Columns +1];
-
-            range = excelworksheet.get_Range(R1C1[1] + "1:" + R1C1[Columns] + Rows.ToString());
-            ComisAr = (System.Object[,])range.get_Value(Type.Missing);
-
-            #region Закрытие Excel
-
-            book.Close(false, false, false);
-
-            ExcelApp.Quit();
-
-            ExcelApp = null;
-            excelsheets = null;
-            excelworksheet = null;
-            //workbooks = null;
-            book = null;
-            range = null;
-            #endregion
-            CloseProcess(ExcelListBeforeStart);
+            int Rows = 0;
+            object[,] ComisAr = getarray(ComisPath,ref Rows);
 
 
-            
+            List<diler> dilers = ListCreate(ComisAr,period,NotFound,AllTariffs);
 
-
-            
-            for (int i = 2; i <= Rows; i++)
-            {
-                int PeriodNabludenia = Convert.ToInt32(ComisAr[i, 2]); 
-                if (PeriodNabludenia > period)
-                    continue;
-                
-                if (ComisAr[i, 1] == null || ComisAr[i, 1].ToString() == "" || ComisAr[i, 1].ToString() == " " || ComisAr[i, 1].ToString() == null)
-                    continue;
-                
-                bool first = false;
-                bool second = false;
-                bool third = false;
-                bool from4to6 = false;
-                bool from7to12 = false;
-                bool abonent = false;
-                bool regula = false;
-
-                bool abonentAll = false;
-                bool regulaAll = false;
-
-                bool SmartBool = false;
-                bool YourCountryBool = false;
-                bool WarmWelcBool = false;
-                bool AllInBool = false;
-
-                bool Smart = false;
-                bool YourCountry = false;
-                bool WarmWelc = false;
-                bool AllIn = false;
-                double predel = 0;
-
-
-                if (abonents.Contains(ComisAr[i, 4].ToString()))
-                {
-                    abonentAll = true;
-
-                    if (ComisAr[i, 4].ToString().Contains("Smart"))
-                        SmartBool = true;
-
-                    if (ComisAr[i, 4].ToString().Contains("Всё включено"))
-                        AllInBool = true;
-                }
-
-                else if (regular.Contains(ComisAr[i, 4].ToString()))
-                {
-                    regulaAll = true;
-
-                    if (ComisAr[i, 4].ToString().Contains("Тёплый приём"))
-                        WarmWelcBool = true;
-
-                    if (ComisAr[i, 4].ToString().Contains("Твоя страна"))
-                        YourCountryBool = true;
-                }
-                else
-                    if (!NotFound.Contains(ComisAr[i, 4].ToString()))
-                    NotFound += ComisAr[i, 4].ToString() + " ;   ";
-
-
-                double nach = Convert.ToDouble(ComisAr[i, 3]);
-
-                if (nach >= 120)
-                {
-                    if (abonentAll)
-                    {
-                        abonent = true;
-
-                        if (SmartBool)
-                            Smart = true;
-
-                        if (AllInBool)
-                            AllIn = true;
-                    }
-                    else if (regulaAll)
-                    {
-                        regula = true;
-
-                        if (WarmWelcBool)
-                            WarmWelc = true;
-
-                        if (YourCountryBool)
-                            YourCountry = true;
-                    }
-                    else
-                        if (!NotFound.Contains(ComisAr[i, 4].ToString()))
-                            NotFound += ComisAr[i, 4].ToString() + " ;   ";
-
-
-
-                    switch (PeriodNabludenia)
-                    {
-                        case 1:
-                            first = true;
-                            break;
-                        case 2:
-                            second = true;
-                            break;
-                        case 3:
-                            third = true;
-                            break;
-                        case 4:
-                            from4to6 = true;
-                            break;
-                        case 5:
-                            from4to6 = true;
-                            break;
-                        case 6:
-                            from4to6 = true;
-                            break;
-                        case 7: case 8: case 9: case 10: case 11: case 12:
-                            from7to12 = true;
-                            break;
-                    }
-
-                    if (Combobox.Text == "MTC" && !Smart)
-                        predel = Nachisl(nach, first, second, third, from4to6, from7to12, 2);
-
-                    if (Combobox.Text == "MTC" && Smart)
-                        predel = Nachisl(nach, first, second, third, from4to6, from7to12, 1);
-
-                    if (Combobox.Text == "Megafon")
-                        predel = Nachisl(nach, first, second, third, from4to6, from7to12, 3);
-
-                }
-
-                bool SecondMonth = (PeriodNabludenia == 2) ? true : false;
-
-
-                bool find = false;
-                foreach (diler d in dilers)
-                {
-                    if (d.name.ToString() == ComisAr[i, 1].ToString())
-                    {
-                        d.sum += nach;
-                        d.sumWithPred += predel;
-
-                        if (abonent)
-                            d.Tab++;
-                        else if (regula)
-                            d.Treg++;
-
-                        if (abonentAll)
-                            d.TabAll++;
-                        else if (regulaAll)
-                            d.TregAll++;
-
-                        find = true;
-
-                        d.allincom++;
-                        if (first)
-                            d.count1201++;
-                        if (second)
-                            d.count1202++;
-                        if (third)
-                            d.count1203++; 
-                        if (from4to6)
-                            d.count12046++;
-                        if (from7to12)
-                            d.count120712++;
-
-                        if (SecondMonth) d.secondmonth++;
-                        if (AllIn) d.allIn++;
-                        if (AllInBool) d.allInAll++;
-                        if (Smart) d.smart++;
-                        if (YourCountry) d.yourCountry++;
-                        if (SmartBool) d.smartAll++;
-                        if (YourCountryBool) d.yourCountryAll++;
-                        if (WarmWelc) d.warmWelc++;
-                        if (WarmWelcBool) d.warmWelcAll++;
-
-                        break;
-                    }
-                }
-
-                if (!find)
-                {
-                    dilers.Add(new diler(ComisAr[i, 1],first,second,third,from4to6,from7to12,nach,abonent,regula,abonentAll,regulaAll,SecondMonth,AllInBool,AllIn,SmartBool,Smart,YourCountryBool,YourCountry,WarmWelcBool,WarmWelc,predel));
-                }
-            }
 
             win.MessageBox.Show("1-ый этап завершен. Укажите файл Базы");
 
@@ -642,6 +472,7 @@ namespace Подсчет_начислений
             int k = 0;
             int N = tochki[0].Length;
 
+            /*
             for (int i = 0; i < N; i++)
             {
                 string TT = "";
@@ -702,7 +533,7 @@ namespace Подсчет_начислений
                         break;
                     }
             }
-
+            */
 
             string resPath = new OpenExcelFile().Filenamereturn();
             if (resPath == "can not open file")
@@ -836,6 +667,14 @@ namespace Подсчет_начислений
             win.MessageBox.Show("Конец");
         }
 
+        static private double Predel(double nach, string tariff)
+        {
+            if (nach < 120)
+                return nach;
+
+            return nach;
+        }
+
         static private double Nachisl(double nach, bool m1, bool m2, bool m3, bool m4, bool m5,int k)
         {
             double Nach = 0;
@@ -924,9 +763,9 @@ namespace Подсчет_начислений
                         {
                             if (d.name.ToString().Contains(TT + DD))
                                 if (a == "a")
-                                    d.a++;
+                                    d.inArhiv++;
                                 else if (a == "b")
-                                    d.b++;
+                                    d.inBase++;
                         }
                         break;
                     }
