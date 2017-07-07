@@ -34,7 +34,7 @@ namespace Подсчет_начислений
     public partial class MainWindow : System.Windows.Window
     {
         string[] R1C1 = new string[] { "0", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ", "AR", "AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ", "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH", "BI", "BJ", "BK", "BL", "BM", "BN", "BO", "BP", "BQ", "BR", "BS", "BT", "BU", "BV", "BW", "BX", "BY", "BZ", "CA", "CB", "CC", "CD", "CE", "CF", "CG", "CH", "CI", "CJ", "CK", "CL", "CM", "CN", "CO", "CP", "CQ", "CR", "CS", "CT", "CU", "CV", "CW", "CX", "CY", "CZ", "DA", "DB", "DC", "DD", "DE", "DF", "DG", "DH", "DI", "DJ", "DK", "DL", "DM", "DN", "DO", "DP", "DQ", "DR", "DS", "DT", "DU", "DV", "DW", "DX", "DY", "DZ", "EA", "EB", "EC", "ED", "EE", "EF", "EG", "EH", "EI", "EJ", "EK", "EL", "EM", "EN", "EO", "EP", "EQ", "ER", "ES", "ET", "EU", "EV", "EW", "EX", "EY", "EZ" };
-        string[] Date = new string[] {".04.2017", ".03.2017", ".02.2017", ".01.2017", ".12.2016", ".11.2016", ".10.2016", ".09.2016", ".08.2016", ".07.2016", ".06.2016", ".05.2016", ".04.2016", ".03.2016", ".02.2016", ".01.2016", };
+        string[] Date = new string[] {".05.2017", ".04.2017", ".03.2017", ".02.2017", ".01.2017", ".12.2016", ".11.2016", ".10.2016", ".09.2016", ".08.2016", ".07.2016", ".06.2016", ".05.2016", ".04.2016", ".03.2016", ".02.2016", ".01.2016", };
         int TariffsCheck;
         string Podkl;
 
@@ -44,7 +44,7 @@ namespace Подсчет_начислений
         }
 
 
-        public void CloseProcess(Process[] before)
+        public void CloseProcess(Process[] before) //закрытие массива процессов (для закрытия процессов EXCEL) 
         {
             Process[] List;
             List = Process.GetProcessesByName("EXCEL");
@@ -164,60 +164,6 @@ namespace Подсчет_начислений
         }
         
 
-        private object[][] getbasearray(string path)
-        {
-            #region Открытие Excel
-            var ExcelApp = new Excel.Application();
-            ExcelApp.Visible = false;
-            Excel.Sheets excelsheets;
-            Excel.Worksheet excelworksheet;
-            //Excel.Workbooks workbooks;
-            Excel.Workbook book;
-            Excel.Range range = null;
-
-            book = ExcelApp.Workbooks.Open(path, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing);
-            //book.ActiveSheet.get_Item(1);
-            excelsheets = book.Worksheets;
-            excelworksheet = (Excel.Worksheet)excelsheets.get_Item(1);
-
-            #endregion
-            Process[] List = Process.GetProcessesByName("EXCEL");
-
-            int Rows = excelworksheet.UsedRange.Rows.Count;
-            int Columns = excelworksheet.UsedRange.Columns.Count;
-
-            object[][] arr = new object[2][];
-
-            int icount = 0;
-            for (int i = 0; i < Columns + 1; i++)
-                if (i == 1 || i == 2)
-                {
-                    object[,] massiv;
-                    arr[icount] = new object[Rows - 1];
-                    range = excelworksheet.get_Range(R1C1[i] + "2:" + R1C1[i] + Rows.ToString());
-                    massiv = (System.Object[,])range.get_Value(Type.Missing);
-                    arr[icount] = massiv.Cast<object>().ToArray();
-                    icount++;
-                }
-
-            #region Закрытие Excel
-
-            book.Close(false, false, false);
-
-            ExcelApp.Quit();
-
-            ExcelApp = null;
-            excelsheets = null;
-            excelworksheet = null;
-            //workbooks = null;
-            book = null;
-            range = null;
-            #endregion
-            CloseProcess(List);
-
-            return arr;
-        }
-
 
         #region Выбор папки
         private string DirSelect()
@@ -234,7 +180,7 @@ namespace Подсчет_начислений
 
         #region ПЕРЕПИСЫВАЮ ЦИКЛ ПРЕОБРАЗОВАНИЯ В СПИСОК
 
-        public List<diler> ListCreate(object[,] ComisAr, int period, string NotFound, string[] tariffs)
+        public List<diler> ListCreate(object[,] ComisAr, int period, ref string NotFound, string[] tariffs, int between)
         {
             List<diler> dilers = new List<diler>();
             int N = ComisAr.GetLength(0);
@@ -252,8 +198,6 @@ namespace Подсчет_начислений
 
 
                 double nach = Convert.ToDouble(ComisAr[i, 3]);
-                double predel = 0;
-
 
                 bool findtarif = false;
                 int tariffID = 0;
@@ -275,46 +219,34 @@ namespace Подсчет_начислений
                 }
 
 
-                if (nach >= 120)
-                {
-                   
-                }
-
-                bool SecondMonth = (PeriodNabludenia == 2) ? true : false;
-
-
                 bool find = false;
                 foreach (diler d in dilers)
                 {
                     if (d.name.ToString() == ComisAr[i, 1].ToString())
                     {
-                        d.sum += nach;
-                        d.sumWithPred += predel;
-
-                        
-
+                        string date = ComisAr[i,6].ToString();
+                        d.AddCom(PeriodNabludenia, tariffID, nach, Combobox.Text,date);
+                        find = true;
                         break;
                     }
                 }
-
                 if (!find)
                 {
-                    //dilers.Add(new diler(ComisAr[i, 1], first, second, third, from4to6, from7to12, nach, abonent, regula, abonentAll, regulaAll, SecondMonth, AllInBool, AllIn, SmartBool, Smart, YourCountryBool, YourCountry, WarmWelcBool, WarmWelc, predel));
+                    dilers.Add(new diler(ComisAr[i, 1],tariffs,between,ComisAr[i,5]));
+                    int listInt = dilers.Count -1;
+                    string date = ComisAr[i, 6].ToString();
+                    dilers[listInt].AddCom(PeriodNabludenia, tariffID,nach, Combobox.Text,date);
                 }
             }
-
-
-
-
             return dilers;
         }
         #endregion
 
 
+
         public class diler
         {
             public object name;
-            //public object kodTT;
 
             public int inBase;
             public int inArhiv;
@@ -323,26 +255,25 @@ namespace Подсчет_начислений
             public double sum;
             public double sumWithPred;
 
+            public object priznakCom;
+
             // новые переменные
-            tarifInfo[] tariffs;
+            public tarifInfo[] tariffs;
             int between;
 
-            UserCount users;
+            public UserCount users;
             
 
-            public diler (object NAME, string[] ab, string[] reg)
+            public diler (object NAME, string[] Tariffs, int Between, object priznakcom)
             {
                 name = NAME;
 
-                between = ab.Length;
-                tariffs = new tarifInfo[between + reg.Length];
+                priznakCom = priznakcom;
+                between = Between;
+                tariffs = new tarifInfo[Tariffs.Length];
+
                 int i = 0;
-                foreach (string t in ab)
-                {
-                    tariffs[i] = new tarifInfo(t);
-                    i++;
-                }
-                foreach (string t in reg)
+                foreach (string t in Tariffs)
                 {
                     tariffs[i] = new tarifInfo(t);
                     i++;
@@ -357,16 +288,24 @@ namespace Подсчет_начислений
                 users = new UserCount();
             }
 
-            public void AddCom(int period, int tariffID, double nach)
+            public void AddCom(int period, int tariffID, double nach, string combobox, string date)
             {
                 allincom++;
                 double predel;
 
+                if (combobox == "Megafon" && period == 2)
+                {
+                    double d = 61 - Convert.ToDouble(date.Substring(0, 2));
+                    double dt = d / 61;
+                    nach = nach * dt;
+                }
+
+
                 if (nach >= 120)
                 {
-                    tariffs[tariffID].goodCount++;
                     users.AddGoodUser(period);
-                    predel = Predel(nach,tariffs[tariffID].tarif);
+                    tariffs[tariffID].goodCount++;
+                    predel = Predel(nach,tariffs[tariffID].tarif, period);
                 }
                 else
                 {
@@ -377,6 +316,65 @@ namespace Подсчет_начислений
 
                 sum += nach;
                 sumWithPred += predel;
+            }
+
+            public int AllGoodAbTariffs()
+            {
+                int count = 0;
+                for (int i = 0; i < between; i++)
+                {
+                    count += tariffs[i].goodCount;
+                }
+                return count;
+            }
+
+            public int AllAbTariffs()
+            {
+                int count = 0;
+                for (int i = 0; i < between; i++)
+                {
+                    count += tariffs[i].count;
+                }
+                return count;
+            }
+
+            public int AllGoodRegTariffs()
+            {
+                int count = 0;
+                for (int i = between; i < tariffs.Length; i++)
+                {
+                    count += tariffs[i].goodCount;
+                }
+                return count;
+            }
+
+            public int AllRegTariffs()
+            {
+                int count = 0;
+                for (int i = between; i < tariffs.Length; i++)
+                {
+                    count += tariffs[i].count;
+                }
+                return count;
+            }
+
+            public string TariffStatistic(string[] SelectTariff)
+            {
+                int c = 0;
+                int gc = 0;
+                string str = "";
+                foreach(tarifInfo t in tariffs)
+                {
+                    foreach(string s in SelectTariff)
+                    if (t.tarif.Contains(s))
+                    {
+                        c += t.count;
+                        gc += t.goodCount;
+                    }
+                }
+                str = (c != 0) ? Math.Round(gc / Convert.ToDouble(c), 2).ToString("P") + " (" + c + ")" : (0).ToString("P") + " (" + c + ")";
+
+                return str;
             }
         }
 
@@ -408,21 +406,20 @@ namespace Подсчет_начислений
             string path2 = "";
             if (Combobox.Text == "Megafon")
             {
-                path1 = @"C:\Users\Andrei\Desktop\Тарифы\Мега абонентская.txt"; //мега
-                path2 = @"C:\Users\Andrei\Desktop\Тарифы\Мега регулярная.txt";
+                path1 = @"C:\Users\Andrei\Desktop\Тарифы\Мега абонентская.txt"; // мега
+                path2 = @"C:\Users\Andrei\Desktop\Тарифы\Мега регулярная.txt"; // мтс
             }
             if (Combobox.Text == "MTC")
             {
                 path1 = @"C:\Users\Andrei\Desktop\Тарифы\МтсАбонент.txt";
                 path2 = @"C:\Users\Andrei\Desktop\Тарифы\МтсРегуляр.txt";
             }
-            string abonents = System.IO.File.ReadAllText(path1).Replace("\n", " ");
-            string regular = System.IO.File.ReadAllText(path2).Replace("\n", " ");
+
+            win.MessageBox.Show("Укажите файл комиссии");
 
             string[] AbArr  = System.IO.File.ReadAllLines(path1);
             string[] RegArr = System.IO.File.ReadAllLines(path2);
             string[] AllTariffs = AbArr.Union(RegArr).ToArray();
-
             string NotFound = "";
 
             string ComisPath = new OpenExcelFile().Filenamereturn();
@@ -432,10 +429,10 @@ namespace Подсчет_начислений
             object[,] ComisAr = getarray(ComisPath,ref Rows);
 
 
-            List<diler> dilers = ListCreate(ComisAr,period,NotFound,AllTariffs);
+            List<diler> dilers = ListCreate(ComisAr,period, ref NotFound,AllTariffs,AbArr.Length);
 
 
-            win.MessageBox.Show("1-ый этап завершен. Укажите файл Базы");
+            win.MessageBox.Show("1-ый этап завершен. Укажите файл Базы  " + dilers.Count.ToString());
 
 
 
@@ -466,79 +463,82 @@ namespace Подсчет_начислений
                 return;
             object[][] tochki = getarray(toch,1, new int[] {3,1});
 
-            int columnsinresult = 31;
+            int columnsinresult = 26;  //////////////////////////////////////////////////////////////
+
             object[,] result = new object[dilers.Count, columnsinresult];
 
             int k = 0;
             int N = tochki[0].Length;
 
-            /*
+            int count = 0;
             for (int i = 0; i < N; i++)
             {
                 string TT = "";
-                if(tochki[1][i] != null)
-                TT = (tochki[1][i].ToString() == null || tochki[1][i].ToString() == "" || tochki[1][i] == null) ? "" : tochki[1][i].ToString() + " - ";
+                //if(tochki[1][i] != null)
+                //TT = (tochki[1][i].ToString() == null || tochki[1][i].ToString() == "" || tochki[1][i] == null) ? "" : tochki[1][i].ToString() + " - ";
                 string DD = (tochki[0][i].ToString() == null) ? " " : tochki[0][i].ToString();
-                string dilerName = TT + DD;
+                string dilerName = DD;
+                
 
                 foreach (diler d in dilers)
                     if (dilerName == d.name.ToString())
                     {
-                        result[k, 0] = d.name;
-                        result[k, 1] = d.b + d.a;
-                        result[k, 2] = d.allincom;
-                        result[k, 3] = d.sum;
-                        result[k, 4] = d.count1201;
-                        result[k, 5] = d.count1202;
-                        result[k, 6] = d.count1203;
-                        result[k, 7] = d.count12046;
-                        result[k, 8] = d.count120712;
-                        result[k, 9] = Math.Round((d.count1201 / Convert.ToDouble(d.allincom)),4);
-                        result[k, 10] = Math.Round((d.count1202 / Convert.ToDouble(d.allincom)),4);
-                        result[k, 11] = Math.Round((d.count1203 / Convert.ToDouble(d.allincom)),4);
-                        result[k, 12] = Math.Round((d.count12046 / Convert.ToDouble(d.allincom)),4);
-                        result[k, 13] = Math.Round((d.count120712 / Convert.ToDouble(d.allincom)),4);
-                        result[k, 14] = Math.Round((d.sum / Convert.ToDouble(d.allincom)),0);
-                        result[k, 15] = Math.Round((d.sum / Convert.ToDouble(d.a + d.b)),0);
-                        result[k, 16] = Math.Round((Convert.ToDouble(d.count1201) / Convert.ToDouble(d.a + d.b)),4);
-                        result[k, 17] = Math.Round(((d.count1201 + d.count1202 + d.count1203) / Convert.ToDouble(d.a + d.b)),4);
-                        result[k, 18] = (((d.TabAll == 0) ? 0 : d.Tab / Convert.ToDouble(d.TabAll))).ToString("p") + "  (" + d.TabAll.ToString() + ")";
-                        result[k, 19] = (((d.TregAll == 0) ? 0 : d.Treg / Convert.ToDouble(d.TregAll))).ToString("p") + "  (" + d.TregAll.ToString() + ")";
+                        int col = 0;
+                        int Otgruz = d.inBase + d.inArhiv;
+                        int GoodAbTariffs = d.AllGoodAbTariffs();
+                        int AllAbTarifs = d.AllAbTariffs();
+                        int GoodRegTariffs = d.AllGoodRegTariffs();
+                        int AllRegTariffs = d.AllRegTariffs();
 
+                        result[k, col++] = d.name;
+                        result[k, col++] = d.sum;
+                        result[k, col++] = d.users.gfirst + d.users.gsecond + d.users.gthird + d.users.gm46 + d.users.gm79;
+                        result[k, col++] = d.allincom;
+                        result[k, col++] = Math.Round((d.users.gfirst / Convert.ToDouble(d.allincom)),4);
+                        result[k, col++] = Math.Round((d.users.gsecond / Convert.ToDouble(d.allincom)),4);
+                        result[k, col++] = Math.Round((d.users.gthird / Convert.ToDouble(d.allincom)),4);
+                        result[k, col++] = Math.Round((d.users.gm46 / Convert.ToDouble(d.allincom)),4);
+                        result[k, col++] = Math.Round((d.users.gm79 / Convert.ToDouble(d.allincom)),4);
+                        result[k, col++] = Math.Round((d.sum / Convert.ToDouble(d.allincom)),0);
+                        result[k, col++] = (Otgruz != 0)?Math.Round((d.sum / Convert.ToDouble(Otgruz)),0):0;
+                        result[k, col++] = (Otgruz != 0)?Math.Round((Convert.ToDouble(d.users.gfirst) / Convert.ToDouble(Otgruz)),4) : 0;
+                        result[k, col++] = (Otgruz != 0)?Math.Round(((d.users.gfirst + d.users.gsecond + d.users.gthird) / Convert.ToDouble(Otgruz)),4): 0;
 
-                        result[k, 20] = result[k, 18];
-                        result[k, 21] = result[k, 19];
-                        result[k, 22] = result[k, 10] = (Math.Round((d.count1202 / Convert.ToDouble(d.allincom)), 3)).ToString("P");
-                        result[k, 23] = (Math.Round((d.count1202 / Convert.ToDouble(d.secondmonth)), 2)*100) + "% (" + d.secondmonth.ToString() + ")";
-                        result[k, 24] = Math.Round((d.sum / Convert.ToDouble(d.allincom)), 0);
+                        result[k, col++] = (d.users.first != 0) ? (Math.Round((d.users.gfirst / Convert.ToDouble(d.users.first)), 1) * 100) + "% (" + d.users.first.ToString() + ")" : 0.ToString("P") + " (0)";
+                        result[k, col++] = (d.users.second != 0) ? (Math.Round((d.users.gsecond / Convert.ToDouble(d.users.second)), 1) * 100) + "% (" + d.users.second.ToString() + ")" : 0.ToString("P") + " (0)";
+                        result[k, col++] = (d.users.third != 0) ? (Math.Round((d.users.gthird / Convert.ToDouble(d.users.third)), 1) * 100) + "% (" + d.users.third.ToString() + ")" : 0.ToString("P") + " (0)";
 
-                        result[k, 25] = d.count1201.ToString() + ":" + d.count1202.ToString() + ":" + d.count1203.ToString() + ":" 
-                            + (d.count12046 + d.count120712).ToString() + "  (" + d.allincom.ToString() + ")";
-                        result[k, 26] = d.allincom.ToString() +" | "+ (d.b + d.a).ToString();
-                        result[k, 27] = Math.Round(d.sum, 0).ToString() + " | " + Math.Round(d.sumWithPred,0).ToString();
-                        result[k, 28] = Math.Round((d.sumWithPred / Convert.ToDouble(d.allincom)), 0);
+                        result[k, col++] = "";
 
-                        result[k, 29] = 0;
-                        if (Combobox.Text == "Megafon" && d.allInAll!=0)
-                            result[k, 29] = Math.Round(d.allIn / Convert.ToDouble(d.allInAll), 2).ToString("P") + "  (" + d.allInAll.ToString() + ")";
-                        if (Combobox.Text == "MTC" && d.smartAll !=0)
-                            result[k, 29] = Math.Round(d.smart / Convert.ToDouble(d.smartAll), 2).ToString("P") + "  (" + d.smartAll.ToString() + ")";
+                        result[k, col++] = (d.users.second!=0)?(Math.Round((d.users.gsecond / Convert.ToDouble(d.users.second)), 1) * 100) + "% (" + d.users.second.ToString() + ")": 0.ToString("P")+" (0)" ;
 
-                        result[k, 30] = 0;
-                        if (Combobox.Text == "Megafon" && d.warmWelcAll != 0)
-                            result[k, 30] = Math.Round(d.warmWelc / Convert.ToDouble(d.warmWelcAll), 2).ToString("P") + "  (" + d.warmWelcAll.ToString() + ")";
-                        if (Combobox.Text == "MTC" && d.yourCountryAll != 0)
-                            result[k, 30] = Math.Round(d.yourCountry / Convert.ToDouble(d.yourCountryAll), 2).ToString("P") + "  (" + d.yourCountryAll.ToString() + ")";
+                        result[k, col++] = (((AllAbTarifs == 0) ? 0 : GoodAbTariffs / Convert.ToDouble(AllAbTarifs))).ToString("p") + "  (" + AllAbTarifs.ToString() + ")";
+                        result[k, col++] = (((AllRegTariffs == 0) ? 0 : GoodRegTariffs / Convert.ToDouble(AllRegTariffs))).ToString("p") + "  (" + AllRegTariffs.ToString() + ")";
+
+                        result[k, col++] = Math.Round((d.sumWithPred / Convert.ToDouble(d.allincom)), 0);
+
+                        result[k, col++] = (Combobox.Text != "Megafon") ? d.TariffStatistic(new string[] { "Smart", "smart" }) : d.TariffStatistic(new string[] { "Всё включено", "всё включено" });
+
+                        result[k, col++] = (Combobox.Text != "Megafon") ? d.TariffStatistic(new string[] { "Твоя страна" }) : d.TariffStatistic(new string[] { "Тёплый приём", "тёплый приём" });
+
+                        result[k, col++] = d.users.gfirst.ToString() + ":" + d.users.gsecond.ToString() + ":" + d.users.gthird.ToString() + ":" 
+                            + (d.users.gm46 + d.users.gm79).ToString() + "  (" + d.allincom.ToString() + ")";
+
+                        result[k, col++] = d.allincom.ToString() +" | "+ (Otgruz).ToString();
+
+                        result[k, col++] = d.priznakCom;
+
+                        count = col;
                         k++;
                         break;
                     }
             }
-            */
+            
 
             string resPath = new OpenExcelFile().Filenamereturn();
             if (resPath == "can not open file")
                 return;
-            insert(resPath,result, dilers.Count,columnsinresult);
+            insert(resPath,result, dilers.Count,count);
 
             win.MessageBox.Show(NotFound,"Конец программы");
         }
@@ -566,10 +566,10 @@ namespace Подсчет_начислений
 
             range = null;
             range = excelworksheet.get_Range(R1C1[1] + "1:" + R1C1[col] + "1");
-            range.Value2 = new object[,] { {"Дилер Дистр", "Всего отгрузок за выбранный период" ,"Кол-во симок в комиссии", "Всего платежей" ,
-                    "кол-во симок >120р в первом месяце" ,"кол-во симок >120р во втором месяце","кол-во симок >120р в третьем месяце",
-             "кол-во симок >120р в 4-6 месяце"  ,"кол-во симок >120р в 7-12 месяце", "1) 1M" ,"2) 2M" ,"3) 3M" ,"4) 4-6M","5) 7-12M","6) платежи на комис" ,"7) платежи на отгрузки" ,
-                    "8) хорошие (>120р) симки 1-го пер набл на кол-во отгрузок" ,"9) хорошие (>120р) симки 1,2,3 пер набл на кол-во отгрузок","C АП", "Без АП" } };
+            range.Value2 = new object[,] { {"Дилер Дистр", "Всего платежей" ,"Хорошие симки за период", "Всего симок в комиссии","кол-во симок >120р в первом месяце" ,"кол-во симок >120р во втором месяце","кол-во симок >120р в третьем месяце",
+             "кол-во симок >120р в 4-6 месяце"  ,"кол-во симок >120р в 7-12 месяце", "6) платежи на комис" ,"7) платежи на отгрузки" ,
+                    "8) хорошие (>120р) симки 1-го пер набл на кол-во отгрузок" ,"9) хорошие (>120р) симки 1,2,3 пер набл на кол-во отгрузок","1м активность","2м активность","3м активность","Подобие","2м активность","тарифы с АП",
+                    "тарифы без АП","Среднее пополнение","Тариф 1","Тариф 2","1м:2м:3м:4+м (ком)","в комиссии | отгрузки за период" } };
 
             range = null;
             range = excelworksheet.get_Range(R1C1[1] + "2:" + R1C1[col] + rows.ToString());
@@ -598,7 +598,7 @@ namespace Подсчет_начислений
         {
             s = s.Remove(0,3);
             int month = Convert.ToInt32(s.Substring(0,2));
-            int per = (s.Contains("2016")) ? 5 + (12 - month) : 5 - month;
+            int per = (s.Contains("2016")) ? 6 + (12 - month) : 6 - month;
             return per;
         }
 
@@ -606,7 +606,6 @@ namespace Подсчет_начислений
         // Создание Экселя Комиссии
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
-
             string ComisPath = new OpenExcelFile().Filenamereturn();
             if (ComisPath == "can not open file")
                 return;
@@ -614,36 +613,38 @@ namespace Подсчет_начислений
 
             if (Combobox.Text == "MTC")
             {
-                object[][] ali = getarray(ComisPath,1,new int[] { 27, 95, 98, 19, 106 }); //MTC
+                object[][] ali = getarray(ComisPath,1,new int[] { 27, 95, 98, 19, 106, 96 }); //MTC
 
                 int N = ali[0].Length;
-                object[,] ins = new object[N, 4];
+                object[,] ins = new object[N, 6];
 
                 for (int i = 0; i < N; i++)
                 {
                     string TT = (ali[4][i].ToString() == null || ali[4][i].ToString() == "" || ali[4][i] == null) ? "" : ali[4][i].ToString() + " - ";
                     string DD = (ali[1][i] == null) ? " " : ali[1][i].ToString();
 
-                    ins[i, 0] = TT + DD;
+                    ins[i, 0] = DD;
                     ins[i, 2] = ali[0][i];
                     ins[i, 1] = ali[2][i];
                     ins[i, 3] = ali[3][i];
+                    ins[i, 4] = ali[5][i];
+                    ins[i, 5] = ali[1][i];
                 }
 
                 string resPath = new OpenExcelFile().Filenamereturn();
                 if (resPath == "can not open file")
                     return;
-                insert(resPath, ins, N, 4);
+                insert(resPath, ins, N, 5);
             }
 
             
             //МЕГА
             if (Combobox.Text == "Megafon")
             {
-                object[][] ali = getarray(ComisPath,1, new int[] {10, 15, 48, 56, 66});
+                object[][] ali = getarray(ComisPath,1, new int[] { 12, 17, 51, 59, 69, 60 }); // колонки меги
 
                 int N = ali[0].Length;
-                object[,] ins = new object[N, 4];
+                object[,] ins = new object[N, 6];
 
                 for (int i = 0; i < N; i++)
                 {
@@ -652,75 +653,31 @@ namespace Подсчет_начислений
                         TT = ( ali[4][i].ToString() == "" ) ? "" : ali[4][i].ToString() + " - ";
                     string DD = (ali[3][i] == null) ? " " : ali[3][i].ToString();
 
-                    ins[i, 0] = TT + DD;
+                    ins[i, 0] = DD;
                     ins[i, 1] = dateinper(ali[1][i].ToString());
                     ins[i, 2] = (ali[2][i] == null) ? 0 : ali[2][i];
                     ins[i, 3] = ali[0][i];
+                    ins[i, 4] = ali[5][i];
+                    ins[i, 5] = ali[1][i];
                 }
 
                 string resPath = new OpenExcelFile().Filenamereturn();
                 if (resPath == "can not open file")
                     return;
-                insert(resPath, ins, N, 4);
+                insert(resPath, ins, N, 6);
             }
 
             win.MessageBox.Show("Конец");
         }
 
-        static private double Predel(double nach, string tariff)
+        static private double Predel(double nach, string tariff, int period)
         {
-            if (nach < 120)
-                return nach;
+            if (nach > 6000)
+                return 6000;
 
             return nach;
         }
 
-        static private double Nachisl(double nach, bool m1, bool m2, bool m3, bool m4, bool m5,int k)
-        {
-            double Nach = 0;
-            if (k == 1)
-            {
-                if (m1)
-                    Nach = (nach > 4000) ? 4000 : nach;
-                else if (m2)
-                    Nach = (nach > 3000) ? 3000 : nach;
-                else if (m3)
-                    Nach = (nach > 2500) ? 2500 : nach;
-                else if (m4)
-                    Nach = (nach > 1500) ? 1500 : nach;
-                else if (m5)
-                    Nach = (nach > 1000) ? 1000 : nach;
-            }
-
-            if (k == 2)
-            {
-                if (m1)
-                    Nach = (nach > 2000) ? 2000 : nach;
-                else if (m2)
-                    Nach = (nach > 1500) ? 1500 : nach;
-                else if (m3)
-                    Nach = (nach > 800) ? 800 : nach;
-                else if (m4)
-                    Nach = (nach > 600) ? 600 : nach;
-                else if (m5)
-                    Nach = (nach > 500) ? 500 : nach;
-            }
-
-            if (k == 3)
-            {
-                if (m1)
-                    Nach = (nach > 6000) ? 6000 : nach;
-                else if (m2)
-                    Nach = (nach > 5500) ? 5500 : nach;
-                else if (m3)
-                    Nach = (nach > 4000) ? 4000 : nach;
-                else if (m4)
-                    Nach = (nach > 3000) ? 3000 : nach;
-                else if (m5)
-                    Nach = (nach > 3000) ? 3000 : nach;
-            }
-            return Nach;
-        }
 
         public void basaseach(ref List<diler> dilers,string BasePath,string[] DatePeriod, int list,string a)
         {
@@ -761,7 +718,7 @@ namespace Подсчет_начислений
 
                         foreach (diler d in dilers)
                         {
-                            if (d.name.ToString().Contains(TT + DD))
+                            if (d.name.ToString().Contains(DD))
                                 if (a == "a")
                                     d.inArhiv++;
                                 else if (a == "b")

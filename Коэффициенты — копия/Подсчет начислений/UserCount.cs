@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Подсчет_начислений
 {
-    class UserCount
+    public class UserCount
     {
         public int first;
         public int second;

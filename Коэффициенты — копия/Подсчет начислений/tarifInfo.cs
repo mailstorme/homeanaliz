@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace Подсчет_начислений
 {
-    class tarifInfo
+    public class tarifInfo
     {
         public string tarif;
         public int count;
+        public int maximalka;
         private int _goodCount;
         public int goodCount
         {
@@ -19,6 +20,7 @@ namespace Подсчет_начислений
 
         public tarifInfo(string tariff)
         {
+            maximalka = 0;
             tarif = tariff;
             this.count = 0;
             this._goodCount = 0;
